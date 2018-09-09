@@ -7,12 +7,10 @@ auth.set_access_token(config.access_token, config.access_token_secret)
 
 api = tweepy.API(auth)
 
-#public_tweets = api.home_timeline()
-#for tweet in public_tweets:
-#    print(tweet.text)
-
-followers_ids = api.followers_ids("@quent1gentil")
+followers_ids = api.followers_ids(config.username)
 followers_number = len(followers_ids)
 print("Nombre de followers: %s" % followers_number)
-print("Premier follower: %s" %followers_ids[0])
+last_follower = api.get_user(id = followers_ids[0])
+name = last_follower.name
+print("Dernier follower: %s" %name)
 print("---- Fin du programme ----")
