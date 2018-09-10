@@ -19,7 +19,7 @@ print("Current number of followers: %s" %followers_number)
 connection = sqlite3.connect('followers.db')
 c = connection.cursor()
 
-# Get previous followers list
+# Get previous followers list from DB
 c.execute('CREATE TABLE IF NOT EXISTS followers (id integer)')
 connection.commit()
 c.execute('SELECT * FROM followers')
@@ -27,21 +27,31 @@ previous_followers_list = c.fetchall()
 previous_followers = set()
 for follower in previous_followers_list:
     previous_followers.add(int(follower[0]))
-print("Previous number of followers: %s" %len(previous_followers))
+previous_followers_number = len(previous_followers)
 
-# Display new followers & unfollowers
-def displayMessageAboutUsers(message, user_ids):
-    for user_id in user_ids:
-        try:
-            user = api.get_user(user_id)
-            print(message %user.name)
-        except tweepy.TweepError:
-            print(TweepError.response.text)
+# We consider that if there are no followers saved in DB, it is the first use
+# of the program by the user
+if previous_followers_number != 0:
+    print("Previous number of followers: %s" %previous_followers_number)
 
-new_followers = current_followers - previous_followers
-displayMessageAboutUsers("%s vous suit désormais.", new_followers)
-unfollowers = previous_followers - current_followers
-displayMessageAboutUsers("%s a cessé de vous suivre.", unfollowers)
+    # Method to display new followers & unfollowers
+    def displayMessageAboutUsers(message, user_ids):
+        for user_id in user_ids:
+            try:
+                user = api.get_user(user_id)
+                print(message %user.name)
+            except tweepy.TweepError:
+                print("Erreur: " + TweepError.response.text)
+
+    new_followers = current_followers - previous_followers
+    displayMessageAboutUsers("%s follows you now.", new_followers)
+    unfollowers = previous_followers - current_followers
+    displayMessageAboutUsers("%s unfollowed you.", unfollowers)
+    if len(new_followers) == 0 and len(unfollowers) == 0:
+        print("\"Nihil novi sub sole\". - Ecclesiastes 1:9")
+else:
+    print("Thank you for using Twitter Supervisor, we are saving your followers\
+     for later use of the program...")
 
 # Refresh database content
 # TODO: Solve the bug preventing to save the last follower
@@ -53,4 +63,4 @@ c.executemany("INSERT INTO followers(id) VALUES(?)", id_generator())
 connection.commit()
 connection.close()
 
-print("---- Fin du programme ----")
+print("Twitter Supervisor ran successfully!")
