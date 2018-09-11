@@ -13,7 +13,7 @@ api = tweepy.API(auth)
 # GET current followers list
 current_followers = set(api.followers_ids(config.username))
 followers_number = len(current_followers)
-print("Current number of followers: %s" %followers_number)
+print("Current number of followers: %d" %followers_number)
 
 # Persistence configuration
 connection = sqlite3.connect('followers.db')
@@ -32,21 +32,21 @@ previous_followers_number = len(previous_followers)
 # We consider that if there are no followers saved in DB, it is the first use
 # of the program by the user
 if previous_followers_number != 0:
-    print("Previous number of followers: %s" %previous_followers_number)
+    print("Previous number of followers: %d" %previous_followers_number)
 
     # Method to display new followers & unfollowers
     def displayMessageAboutUsers(message, user_ids):
         for user_id in user_ids:
             try:
                 user = api.get_user(user_id)
-                print(message %user.name)
+                print(message %(user.name, user.screen_name))
             except tweepy.TweepError:
                 print("Erreur: " + TweepError.response.text)
 
     new_followers = current_followers - previous_followers
-    displayMessageAboutUsers("%s follows you now.", new_followers)
+    displayMessageAboutUsers("%s (@%s) follows you now.", new_followers)
     unfollowers = previous_followers - current_followers
-    displayMessageAboutUsers("%s unfollowed you.", unfollowers)
+    displayMessageAboutUsers("%s (@%s) unfollowed you.", unfollowers)
     if len(new_followers) == 0 and len(unfollowers) == 0:
         print("\"Nihil novi sub sole\". - Ecclesiastes 1:9")
 else:
