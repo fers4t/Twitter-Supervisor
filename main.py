@@ -40,15 +40,16 @@ if previous_followers_number != 0:
             try:
                 user = api.get_user(user_id)
                 print(message %(user.name, user.screen_name))
-            except tweepy.TweepError:
-                print("Erreur: " + TweepError.response.text)
+            except tweepy.TweepError as error :
+                print("For user n°%s, the following error happened: %s"\
+                %(user_id, error.reason))
 
     new_followers = current_followers - previous_followers
     displayMessageAboutUsers("%s (@%s) follows you now.", new_followers)
     unfollowers = previous_followers - current_followers
     displayMessageAboutUsers("%s (@%s) unfollowed you.", unfollowers)
     if len(new_followers) == 0 and len(unfollowers) == 0:
-        print("\"Nihil novi sub sole\". - Ecclesiastes 1:9")
+        print("\"[...] nihil novi sub sole.\" - Ecclesiastes 1:9")
 else:
     print("Thank you for using Twitter Supervisor, we are saving your followers\
      for later use of the program...")
