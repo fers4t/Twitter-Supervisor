@@ -30,5 +30,5 @@ It should look like this:
 
 ## How to use it?
 Run `python main.py` in a shell in the project directory:
-* the first time it will only create a `followers.db` SQLite database containing the IDs of your followers.
-* Then, each time you run this command, it will tell you who are the followers you have gained or lost in the meantime. 
+* the first time it will only create a `followers.db` SQLite database (containing the IDs of your followers) and a `.log` file.
+* Then, each time you run this command, it will display in the console (and write in the logs file) who are the followers you have gained or lost in the meantime. 
