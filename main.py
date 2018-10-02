@@ -1,8 +1,8 @@
 import logging
-import sqlite3
 import tweepy
 
 import config
+import database
 
 # Logging configuration---------------------------------------------------------
 # logging to file
@@ -22,18 +22,7 @@ logging.getLogger('').addHandler(console)
 logging.info('Twitter Supervisor launched!')
 
 # Retrieve the previous followers list------------------------------------------
-# Persistence configuration
-connection = sqlite3.connect('followers.db')
-c = connection.cursor()
-
-# Query the database
-c.execute('CREATE TABLE IF NOT EXISTS followers (id integer)')
-connection.commit()
-c.execute('SELECT * FROM followers')
-previous_followers_list = c.fetchall()
-previous_followers = set()
-for follower in previous_followers_list:
-    previous_followers.add(int(follower[0]))
+previous_followers = database.getPreviousFollowersSet()
 previous_followers_number = len(previous_followers)
 
 # Query the Twitter API---------------------------------------------------------
@@ -65,22 +54,16 @@ if previous_followers_number != 0:
     displayMessageAboutUsers("%s (@%s) follows you now.", new_followers)
     unfollowers = previous_followers - current_followers
     displayMessageAboutUsers("%s (@%s) unfollowed you.", unfollowers)
-    if len(new_followers) == 0 and len(unfollowers) == 0:
-        logging.info("\"[...] nihil novi sub sole.\" - Ecclesiastes 1:9")
 
 # If there are no followers saved in DB, we consider it is the first use
 else:
     print("Thank you for using Twitter Supervisor, we are saving your followers\
      for later use of the program...")
 
-# Refresh database content------------------------------------------------------
-# TODO: Solve the bug preventing to save the last follower
-c.execute('DELETE FROM followers')
-def id_generator():
-    for id in current_followers:
-        yield (id,)
-c.executemany("INSERT INTO followers(id) VALUES(?)", id_generator())
-connection.commit()
-connection.close()
+# Save the followers set in DB if there is change
+if len(new_followers) == 0 and len(unfollowers) == 0:
+    logging.info("\"[...] nihil novi sub sole.\" - Ecclesiastes 1:9")
+else:
+    database.saveFollowersSet(current_followers)
 
 logging.info("Twitter Supervisor ran successfully!")
