@@ -7,16 +7,16 @@ Twitter Supervisor provides small but useful functionalities for a Twitter user:
 * ...
 
 ## Requirements
-* Python 3.6 (There are problems with 3.7 and older versions have not been tested)
-* Tweepy (https://github.com/tweepy/tweepy): you should normaly only need to execute `pip install tweepy` to install it on your PC.
-* Having a (at least free) Twitter developer account (https://developer.twitter.com/en/apply-for-access), to get the key, 
+* **Python 3.6** (There are problems with 3.7 and older versions have not been tested)
+* **python-twitter** (https://github.com/bear/python-twitter): Execute `pip install python-twitter` to install it on your PC. You need at least the 3.5 version, because it is the first one adapted to the last Twitter API changes.
+* **Having a (at least free) Twitter developer account** (https://developer.twitter.com/en/apply-for-access), to get the key,
 the token and their secrets which are required to access the Twitter API. (One of my objective is to quickly get rid of this requirement)
 
 ## Installation
 * Clone the project repository on your machine.
-* Create a `config.py` file in the project directory, where you will put the API keys and the id of the account you want to supervise. 
+* Create a `config.py` file in the project directory, where you will put the API keys and the id of the account you want to supervise.
 It should look like this:
-	
+
 	```
 	# Key, token & secrets
 	consumer_key = "..."
@@ -31,4 +31,4 @@ It should look like this:
 ## How to use it?
 Run `python main.py` in a shell in the project directory:
 * the first time it will only create a `followers.db` SQLite database (containing the IDs of your followers) and a `.log` file.
-* Then, each time you run this command, it will display in the console (and write in the logs file) who are the followers you have gained or lost in the meantime. 
+* Then, each time you run this command, it will display in the console (and write in the logs file) who are the followers you have gained or lost in the meantime.
