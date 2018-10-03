@@ -41,11 +41,12 @@ followers_number = len(current_followers)
 logging.info("Current number of followers: %d" % followers_number)
 
 # Comparison of the two sets of followers
+new_followers = current_followers - previous_followers
+unfollowers = previous_followers - current_followers
+
 if previous_followers_number != 0:
     logging.info("Previous number of followers: %d" % previous_followers_number)
-    new_followers = current_followers - previous_followers
     publishUsernames(True, new_followers)
-    unfollowers = previous_followers - current_followers
     publishUsernames(False, unfollowers)
 # If there are no followers saved in DB, we consider it is the first use
 else:
