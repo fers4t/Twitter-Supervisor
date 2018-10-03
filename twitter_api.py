@@ -15,3 +15,6 @@ def getUser(userId):
     except tweepy.TweepError as error :
         logging.error("An error happened when we tried to find user\
          %d: %s" % (user_id, error.reason));
+
+def sendDirectMessage(text):
+    api.send_direct_message(screen_name = config.username, text = text);
