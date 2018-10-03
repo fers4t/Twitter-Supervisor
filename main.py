@@ -9,39 +9,42 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
                     filename='twitter_supervisor.log')
-# define a Handler which writes INFO messages or higher to the sys.stderr
+# logging to console
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 formatter = logging.Formatter('%(levelname)-8s: %(message)s')
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
 
+# Function to "publish" the name of the new followers & unfollowers-------------
+def publishUsernames(following, user_ids):
+    if following:
+        message = "%s (@%s) follows you now."
+    else:
+        message = "%s (@%s) unfollowed you."
+    for user_id in user_ids:
+        twitter_api.getUser(user_id)
+        logging.info(message %(user.name, user.screen_name));
+
+# Main function-----------------------------------------------------------------
 logging.info('Twitter Supervisor launched!')
 
-# Retrieve the previous followers set-------------------------------------------
+# Retrieve the previous followers set
 previous_followers = database.getPreviousFollowersSet()
 previous_followers_number = len(previous_followers)
 
-# Get the current followers set-------------------------------------------------
+# Get the current followers set
 current_followers = twitter_api.getFollowersSet()
 followers_number = len(current_followers)
 logging.info("Current number of followers: %d" % followers_number)
 
-# Comparison of the two sets of followers---------------------------------------
+# Comparison of the two sets of followers
 if previous_followers_number != 0:
     logging.info("Previous number of followers: %d" % previous_followers_number)
-
-    # Method to display new followers & unfollowers
-    def displayMessageAboutUsers(message, user_ids):
-        for user_id in user_ids:
-            twitter_api.getUser(user_id)
-            logging.info(message %(user.name, user.screen_name));
-
     new_followers = current_followers - previous_followers
-    displayMessageAboutUsers("%s (@%s) follows you now.", new_followers)
+    publishUsernames(True, new_followers)
     unfollowers = previous_followers - current_followers
-    displayMessageAboutUsers("%s (@%s) unfollowed you.", unfollowers)
-
+    publishUsernames(False, unfollowers)
 # If there are no followers saved in DB, we consider it is the first use
 else:
     print("Thank you for using Twitter Supervisor, we are saving your followers\
