@@ -12,11 +12,6 @@ def getFollowersSet():
 
 def getUser(userId):
     return api.GetUser(userId);
-    #try:
-    #    return api.get_user(userId)
-    # except tweepy.TweepError as error :
-    #     logging.error("An error happened when we tried to find user\
-    #      %d: %s" % (user_id, error.reason));
 
 def sendDirectMessage(text):
     api.PostDirectMessage(text, screen_name = config.username);
