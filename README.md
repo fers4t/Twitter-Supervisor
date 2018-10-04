@@ -33,7 +33,7 @@ Run `python main.py`(Windows) or `python3 main.py`(Linux) in a shell in the proj
 * the first time it will only create a `followers.db` SQLite database (containing the IDs of your followers) and a `.log` file.
 * Then, each time this command is run, it will send a direct message to the specified Twitter account (from itself) to tell you who are the followers you have gained or lost in the meantime.
 
-> Pro-tip: the name of the new followers & unfollowers is in the log file too.
+> Pro-tip: the names of the new followers & unfollowers are in the log file too.
 
 If you wish to automate this operation, you can, for example, create a scheduled job on a Linux server with **cron**:
 * edit the crontab file of a user with the command `crontab -e`
