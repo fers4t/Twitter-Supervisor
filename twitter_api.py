@@ -10,7 +10,7 @@ api = twitter.Api(consumer_key=config.consumer_key,
     access_token_secret=config.access_token_secret)
 
 def getFollowersSet():
-    try:
+	try:
 		return set(api.GetFollowerIDs())
 	except twitter.error.TwitterError as e:
 		logging.critical('Unable to retrieve followers id list: {}'.format(e.message))
