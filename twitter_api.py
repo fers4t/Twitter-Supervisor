@@ -1,4 +1,6 @@
 import twitter
+import logging
+
 import config
 
 # API configuration
@@ -11,7 +13,12 @@ def getFollowersSet():
     return set(api.GetFollowerIDs());
 
 def getUser(userId):
-    return api.GetUser(userId);
+    try:
+        return api.GetUser(userId)
+    except twitter.error.TwitterError as e:
+        logging.error('An error happened while searching for user n°{0}: {1}'
+        .format(userId, e.message))
+        return None;
 
 def sendDirectMessage(text):
     api.PostDirectMessage(text, screen_name = config.username);

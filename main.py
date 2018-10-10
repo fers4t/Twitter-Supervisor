@@ -24,9 +24,10 @@ def publishUsernames(following, user_ids):
         message = '{0} (@{1}) unfollowed you.'
     for user_id in user_ids:
         user = twitter_api.getUser(user_id)
-        message = message.format(user.name, user.screen_name)
-        twitter_api.sendDirectMessage(message)
-        logging.info(message);
+        if user is not None:
+            message = message.format(user.name, user.screen_name)
+            twitter_api.sendDirectMessage(message)
+            logging.info(message);
 
 # Main function-----------------------------------------------------------------
 logging.info('Twitter Supervisor launched!')
