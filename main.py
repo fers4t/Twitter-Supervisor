@@ -5,7 +5,7 @@ import twitter_api
 
 # Logging configuration---------------------------------------------------------
 # logging to file
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
                     filename='twitter_supervisor.log')
@@ -19,14 +19,15 @@ logging.getLogger('').addHandler(console)
 # Function to "publish" the name of the new followers & unfollowers-------------
 def publishUsernames(following, user_ids):
     if following:
-        message = "%s (@%s) follows you now."
+        message = '{0} (@{1}) follows you now.'
     else:
-        message = "%s (@%s) unfollowed you."
+        message = '{0} (@{1}) unfollowed you.'
     for user_id in user_ids:
         user = twitter_api.getUser(user_id)
-        message = message % (user.name, user.screen_name)
+        message = message.format(user.name, user.screen_name)
         twitter_api.sendDirectMessage(message)
-        logging.info(message);
+        logging.info(message)
+    ;
 
 # Main function-----------------------------------------------------------------
 logging.info('Twitter Supervisor launched!')
