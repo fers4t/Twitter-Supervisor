@@ -10,14 +10,17 @@ api = twitter.Api(consumer_key=config.consumer_key,
     access_token_secret=config.access_token_secret)
 
 def getFollowersSet():
-    return set(api.GetFollowerIDs());
+    try:
+	return set(api.GetFollowerIDs())
+	except twitter.error.TwitterError as e:
+		logging.error('Unable to retrieve followers id list: {}'.format(e.message))
+		return None;
 
 def getUser(userId):
     try:
         return api.GetUser(userId)
     except twitter.error.TwitterError as e:
-        logging.error('An error happened while searching for user n°{0}: {1}'
-        .format(userId, e.message))
+        loggingx.error('An error happened while searching for user n°{0}: {1}'.format(userId, e.message))
         return None;
 
 def sendDirectMessage(text):
