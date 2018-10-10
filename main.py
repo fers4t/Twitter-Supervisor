@@ -39,7 +39,7 @@ previous_followers_number = len(previous_followers)
 # Get the current followers set
 current_followers = twitter_api.getFollowersSet()
 if current_followers is None:
-   quit()
+	quit()
 followers_number = len(current_followers)
 logging.info("Current number of followers: %d" % followers_number)
 
