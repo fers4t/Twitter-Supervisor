@@ -11,17 +11,21 @@ api = twitter.Api(consumer_key=config.consumer_key,
 
 def getFollowersSet():
     try:
-	return set(api.GetFollowerIDs())
+		return set(api.GetFollowerIDs())
 	except twitter.error.TwitterError as e:
-		logging.error('Unable to retrieve followers id list: {}'.format(e.message))
+		logging.critical('Unable to retrieve followers id list: {}'.format(e.message))
 		return None;
 
 def getUser(userId):
     try:
         return api.GetUser(userId)
     except twitter.error.TwitterError as e:
-        loggingx.error('An error happened while searching for user n°{0}: {1}'.format(userId, e.message))
+        logging.error('An error happened while searching for user n°{0}: {1}'.format(userId, e.message))
         return None;
 
 def sendDirectMessage(text):
-    api.PostDirectMessage(text, screen_name = config.username);
+	try:
+		return api.PostDirectMessage(text, screen_name = config.username)
+	except twitter.error.TwitterError as e:
+		logging.error('Unable to send direct message: {}'.format(e.message))
+		return None;
