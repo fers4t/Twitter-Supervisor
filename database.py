@@ -4,7 +4,7 @@ def openConnection():
   connection = sqlite3.connect('followers.db')
   return connection, connection.cursor();
 
-def getPreviousFollowersSet():
+def get_previous_followers_set():
     connection, cursor = openConnection()
     cursor.execute('CREATE TABLE IF NOT EXISTS followers (id integer)')
     connection.commit()
@@ -20,7 +20,7 @@ def id_generator(followersSet):
     for id in followersSet:
         yield (id,);
 
-def saveFollowersSet(followersSet):
+def save_followers_set(followersSet):
     # TODO: Solve the bug preventing sometimes to save the last follower
     connection, cursor = openConnection()
     cursor.execute('DELETE FROM followers')

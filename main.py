@@ -5,29 +5,29 @@ import database
 import twitter_api
 
 # Function to "publish" the name of the new followers & unfollowers-------------
-def publishUsernames(following, user_ids):
+def publish_usernames(following, user_ids):
     if following:
         message = '{0} (@{1}) follows you now.'
     else:
         message = '{0} (@{1}) unfollowed you.'
     for user_id in user_ids:
-        user = twitter_api.getUser(user_id)
+        user = twitter_api.get_user(user_id)
         if user is not None:
             message = message.format(user.name, user.screen_name)
-            twitter_api.sendDirectMessage(message)
+            twitter_api.send_direct_message(message)
             logging.info(message);
 
 # Main function-----------------------------------------------------------------
 logging.info('Twitter Supervisor launched!')
 
 # Retrieve the previous followers set
-previous_followers = database.getPreviousFollowersSet()
+previous_followers = database.get_previous_followers_set()
 previous_followers_number = len(previous_followers)
 
 # Get the current followers set
-current_followers = twitter_api.getFollowersSet()
+current_followers = twitter_api.get_followers_set()
 if current_followers is None:
-	quit()
+    quit()
 followers_number = len(current_followers)
 logging.info("Current number of followers: %d" % followers_number)
 
@@ -37,8 +37,8 @@ unfollowers = previous_followers - current_followers
 
 if previous_followers_number != 0:
     logging.info("Previous number of followers: %d" % previous_followers_number)
-    publishUsernames(True, new_followers)
-    publishUsernames(False, unfollowers)
+    publish_usernames(True, new_followers)
+    publish_usernames(False, unfollowers)
 # If there are no followers saved in DB, we consider it is the first use
 else:
     print("Thank you for using Twitter Supervisor, we are saving your followers\
@@ -48,6 +48,6 @@ else:
 if len(new_followers) == 0 and len(unfollowers) == 0:
     logging.info("\"[...] nihil novi sub sole.\" - Ecclesiastes 1:9")
 else:
-    database.saveFollowersSet(current_followers)
+    database.save_followers_set(current_followers)
 
 logging.info("Twitter Supervisor ran successfully!")
