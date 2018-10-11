@@ -15,7 +15,7 @@ def publish_usernames(following, user_ids):
         if user is not None:
             message = message.format(user.name, user.screen_name)
             twitter_api.send_direct_message(message)
-            logging.info(message);
+            logging.info(message)
 
 # Main function-----------------------------------------------------------------
 logging.info('Twitter Supervisor launched!')
