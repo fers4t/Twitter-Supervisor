@@ -1,10 +1,10 @@
-import twitter
+from twitter import Api, error
 import logging
 
 import config
 
 # API configuration
-api = twitter.Api(consumer_key=config.CONSUMER_KEY,
+api = Api(consumer_key=config.CONSUMER_KEY,
     consumer_secret=config.CONSUMER_SECRET,
     access_token_key=config.ACCESS_TOKEN,
     access_token_secret=config.ACCESS_TOKEN_SECRET)
@@ -12,20 +12,21 @@ api = twitter.Api(consumer_key=config.CONSUMER_KEY,
 def get_followers_set():
 	try:
 		return set(api.GetFollowerIDs())
-	except twitter.error.TwitterError as e:
+	except error.TwitterError as e:
 		logging.critical('Unable to retrieve followers id list: {}'.format(e.message))
 		return None
 
 def get_user(userId):
     try:
         return api.GetUser(userId)
-    except twitter.error.TwitterError as e:
+    except error.TwitterError as e:
         logging.error('An error happened while searching for user n°{0}: {1}'.format(userId, e.message))
         return None
 
 def send_direct_message(text):
-	try:
-		return api.PostDirectMessage(text, screen_name = config.USERNAME)
-	except twitter.error.TwitterError as e:
-		logging.error('Unable to send direct message: {}'.format(e.message))
-		return None
+    logging.info('Sending direct message: \"{}\"'.format(text))
+    try:
+        return api.PostDirectMessage(text, screen_name = config.USERNAME)
+    except error.TwitterError as e:
+        logging.error('Unable to send direct message: {}'.format(e.message))
+        return None

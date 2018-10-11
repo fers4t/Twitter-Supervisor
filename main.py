@@ -15,7 +15,6 @@ def publish_usernames(following, user_ids):
         if user is not None:
             message = message.format(user.name, user.screen_name)
             twitter_api.send_direct_message(message)
-            logging.info(message)
 
 # Main function-----------------------------------------------------------------
 logging.info('Twitter Supervisor launched!')
@@ -29,7 +28,7 @@ current_followers = twitter_api.get_followers_set()
 if current_followers is None:
     quit()
 followers_number = len(current_followers)
-logging.info("Current number of followers: %d" % followers_number)
+logging.info("Current number of followers: {}".format(followers_number))
 
 # Comparison of the two sets of followers
 new_followers = current_followers - previous_followers
@@ -40,7 +39,7 @@ if previous_followers_number == 0:
     print("Thank you for using Twitter Supervisor, we are saving your followers\
      for later use of the program...")
 else:
-    logging.info("Previous number of followers: %d" % previous_followers_number)
+    logging.info("Previous number of followers: {}".format(previous_followers_number))
     publish_usernames(True, new_followers)
     publish_usernames(False, unfollowers)
 
