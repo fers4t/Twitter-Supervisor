@@ -19,13 +19,13 @@ It should look like this:
 
 	```
 	# Key, token & secrets
-	consumer_key = "..."
-	consumer_secret = "..."
-	access_token = "..."
-	access_token_secret = "..."
+	CONSUMER_KEY = "..."
+	CONSUMER_SECRET = "..."
+	ACCESS_TOKEN = "..."
+	ACCESS_TOKEN_SECRET = "..."
 
 	# user
-	username = "@yourusername"
+	USERNAME = "@yourusername"
 	```
 
 ## How to use it?
