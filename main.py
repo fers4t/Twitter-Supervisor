@@ -35,19 +35,19 @@ logging.info("Current number of followers: %d" % followers_number)
 new_followers = current_followers - previous_followers
 unfollowers = previous_followers - current_followers
 
-if previous_followers_number != 0:
+# If there are no followers saved in DB, we consider it is the first use
+if previous_followers_number == 0:
+    print("Thank you for using Twitter Supervisor, we are saving your followers\
+     for later use of the program...")
+else:
     logging.info("Previous number of followers: %d" % previous_followers_number)
     publish_usernames(True, new_followers)
     publish_usernames(False, unfollowers)
-# If there are no followers saved in DB, we consider it is the first use
-else:
-    print("Thank you for using Twitter Supervisor, we are saving your followers\
-     for later use of the program...")
 
 # Save the followers set in DB if there is change
 if len(new_followers) == 0 and len(unfollowers) == 0:
     logging.info("\"[...] nihil novi sub sole.\" - Ecclesiastes 1:9")
 else:
-    database.save_followers_set(current_followers)
+    database.update(new_followers, unfollowers)
 
 logging.info("Twitter Supervisor ran successfully!")

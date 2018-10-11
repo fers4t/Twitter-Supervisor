@@ -16,14 +16,13 @@ def get_previous_followers_set():
         previous_followers.add(int(follower[0]))
     return previous_followers
 
-def id_generator(followersSet):
-    for id in followersSet:
+def id_generator(followers_set):
+    for id in followers_set:
         yield (id,)
 
-def save_followers_set(followersSet):
-    # TODO: Solve the bug preventing sometimes to save the last follower
+def update(new_followers, unfollowers):
     connection, cursor = openConnection()
-    cursor.execute('DELETE FROM followers')
-    cursor.executemany("INSERT INTO followers(id) VALUES(?)", id_generator(followersSet))
+    cursor.executemany("DELETE FROM followers WHERE id=?", id_generator(unfollowers))
+    cursor.executemany("INSERT INTO followers(id) VALUES(?)", id_generator(new_followers))
     connection.commit()
     connection.close()
