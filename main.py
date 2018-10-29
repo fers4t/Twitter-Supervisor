@@ -4,6 +4,7 @@ import logging_config
 import database
 import twitter_api
 
+
 # Function to "publish" the name of the new followers & unfollowers-------------
 def publish_usernames(following, user_ids):
     if following:
@@ -15,6 +16,7 @@ def publish_usernames(following, user_ids):
         if user is not None:
             message = message.format(user.name, user.screen_name)
             twitter_api.send_direct_message(message)
+
 
 # Main function-----------------------------------------------------------------
 logging.info('Twitter Supervisor launched!')
