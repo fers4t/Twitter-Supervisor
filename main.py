@@ -8,13 +8,13 @@ import twitter_api
 # Function to "publish" the name of the new followers & unfollowers-------------
 def publish_usernames(following, user_ids):
     if following:
-        message = '{0} (@{1}) follows you now.'
+        pattern = '{0} (@{1}) follows you now.'
     else:
-        message = '{0} (@{1}) unfollowed you.'
+        pattern = '{0} (@{1}) unfollowed you.'
     for user_id in user_ids:
         user = twitter_api.get_user(user_id)
         if user is not None:
-            message = message.format(user.name, user.screen_name)
+            message = pattern.format(user.name, user.screen_name)
             twitter_api.send_direct_message(message)
 
 
