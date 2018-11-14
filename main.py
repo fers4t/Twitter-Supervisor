@@ -34,7 +34,7 @@ logging.info("Current number of followers: {}".format(followers_number))
 
 # Comparison of the two sets of followers
 new_followers = current_followers - previous_followers
-unfollowers = previous_followers - current_followers
+traitors = previous_followers - current_followers
 
 # If there are no followers saved in DB, we consider it is the first use
 if previous_followers_number == 0:
@@ -43,13 +43,13 @@ if previous_followers_number == 0:
 else:
     logging.info("Previous number of followers: {}".format(previous_followers_number))
     publish_usernames(True, new_followers)
-    publish_usernames(False, unfollowers)
+    publish_usernames(False, traitors)
 
 # Save the followers set in DB if there is change
-if len(new_followers) == 0 and len(unfollowers) == 0:
+if len(new_followers) == 0 and len(traitors) == 0:
     logging.info("\"[...] nihil novi sub sole.\" - Ecclesiastes 1:9")
 else:
-    database.update_followers_table(new_followers, unfollowers)
-    database.insert_treasons(unfollowers)
+    database.update_followers_table(new_followers, traitors)
+    database.insert_betrayals(traitors)
 
 logging.info("Twitter Supervisor ran successfully!")

@@ -25,19 +25,19 @@ def id_generator(followers_set):
         yield (id,)
 
 
-def update_followers_table(new_followers, unfollowers):
+def update_followers_table(new_followers, traitors):
     connection, cursor = open_connection()
-    cursor.executemany("DELETE FROM followers WHERE id=?", id_generator(unfollowers))
+    cursor.executemany("DELETE FROM followers WHERE id=?", id_generator(traitors))
     cursor.executemany("INSERT INTO followers(id) VALUES(?)", id_generator(new_followers))
     connection.commit()
     connection.close()
 
 
-def insert_treasons(unfollowers):
+def insert_betrayals(traitors):
     connection, cursor = open_connection()
-    cursor.execute("CREATE TABLE IF NOT EXISTS treasons (traitor_id integer, treason_date text )")
-    for unfollower_id in unfollowers:
-        new_tuple = [(unfollower_id, datetime.today().isoformat())]
-        cursor.execute("INSERT INTO treasons(traitor_id, treason_date) VALUES(?, ?)", new_tuple)
+    cursor.execute("CREATE TABLE IF NOT EXISTS betrayals (traitor_id integer, betrayal_date text )")
+    for traitor_id in traitors:
+        new_tuple = [(traitor_id, datetime.today().isoformat())]
+        cursor.execute("INSERT INTO betrayals(traitor_id, betrayal_date) VALUES(?, ?)", new_tuple)
     connection.commit()
     connection.close()
