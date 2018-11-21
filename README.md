@@ -1,5 +1,5 @@
 # Twitter Supervisor
-> I made this program to learn about Python and to know who stop following me on Twitter. - Quentin JODER 
+> "I made this program to learn about Python and to know who stop following me on Twitter." - Quentin JODER 
 
 Twitter Supervisor informs you (via direct message) when someone follows or unfollows you.
 
@@ -33,7 +33,7 @@ Run `python main.py`(Windows) or `python3 main.py`(Linux) in a shell in the proj
 * the first time it will only create a `followers.db` SQLite database (containing the IDs of your followers) and a `.log`
  file.
 * Then, each time this command is run, it will send direct messages from the `USERNAME` account to itself to give the names
- of the people who followed/unfollowed you in the meantime.
+ of the people who followed/unfollowed it in the meantime.
 
 > Pro-tip: the names of the new followers & unfollowers are in the log file too.
 
