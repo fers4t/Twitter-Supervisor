@@ -50,6 +50,5 @@ if len(new_followers) == 0 and len(traitors) == 0:
     logging.info("\"[...] nihil novi sub sole.\" - Ecclesiastes 1:9")
 else:
     database.update_followers_table(new_followers, traitors)
-    database.insert_betrayals(traitors)
 
 logging.info("Twitter Supervisor ran successfully!")
