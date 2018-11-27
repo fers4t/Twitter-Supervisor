@@ -24,12 +24,13 @@ def id_generator(followers_set):
     for id in followers_set:
         yield (id,)
 
-def event_generator(users_set, true){
+
+def event_generator(users_set, true):
     for id in users_set:
-	if true:
-	    yield (id, datetime.today().isoformat(), 1,)
-	else:
-	    yield (id, datetime.today().isoformat(), 1,)
+        if true:
+            yield (id, datetime.today().isoformat(), 1,)
+        else:
+            yield (id, datetime.today().isoformat(), 1,)
 
 
 def update_followers_table(new_followers, traitors):
@@ -37,8 +38,8 @@ def update_followers_table(new_followers, traitors):
     cursor.executemany("DELETE FROM followers WHERE id=?", id_generator(traitors))
     cursor.executemany("INSERT INTO followers(id) VALUES(?)", id_generator(new_followers))
     cursor.execute("CREATE TABLE IF NOT EXISTS friendship_events (user_id integer, event_date text, follows integer)")
-    #TODO populate friendships_event
-    cursor.executemany("INSERT INTO friendship_events(user_id, event_date, follows VALUES(?,?,?)",event_generator(new_followers, True) 
+    # TODO populate friendships_event
+    cursor.executemany("INSERT INTO friendship_events(user_id, event_date, follows) VALUES(?,?,?)", event_generator(new_followers, True))
     connection.commit()
     connection.close()
 
