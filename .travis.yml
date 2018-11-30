@@ -1,0 +1,8 @@
+language: cpp
+
+addons:
+  apt:
+    packages:
+      - make
+      
+install: cmake ./SFMT-src-1.4/ && make ./
