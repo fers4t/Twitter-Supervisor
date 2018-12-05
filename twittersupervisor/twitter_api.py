@@ -1,7 +1,7 @@
 from twitter import Api, error
 import logging
 
-import config
+from twittersupervisor import config
 
 # API configuration
 api = Api(consumer_key=config.CONSUMER_KEY,

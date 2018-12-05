@@ -2,9 +2,7 @@
 import argparse
 import logging
 # Custom modules
-import logging_config
-import database
-import twitter_api
+from twittersupervisor import database, twitter_api, logging_config
 
 
 # Function to "publish" the name of the new followers & unfollowers-------------
