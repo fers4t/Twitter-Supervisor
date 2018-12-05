@@ -30,25 +30,22 @@ def event_generator(users_set, true):
         if true:
             yield (id, datetime.today().isoformat(), 1,)
         else:
-            yield (id, datetime.today().isoformat(), 1,)
+            yield (id, datetime.today().isoformat(), 0,)
 
 
 def update_followers_table(new_followers, traitors):
     connection, cursor = open_connection()
+
+    # Populate "followers" table
     cursor.executemany("DELETE FROM followers WHERE id=?", id_generator(traitors))
     cursor.executemany("INSERT INTO followers(id) VALUES(?)", id_generator(new_followers))
+
+    # Create & populate "friendship_events" table
     cursor.execute("CREATE TABLE IF NOT EXISTS friendship_events (user_id integer, event_date text, follows integer)")
-    # TODO populate friendships_event
-    cursor.executemany("INSERT INTO friendship_events(user_id, event_date, follows) VALUES(?,?,?)", event_generator(new_followers, True))
-    connection.commit()
-    connection.close()
+    cursor.executemany("INSERT INTO friendship_events(user_id, event_date, follows) VALUES(?,?,?)",
+                       event_generator(new_followers, True))
+    cursor.executemany("INSERT INTO friendship_events(user_id, event_date, follows) VALUES(?,?,?)",
+                       event_generator(traitors, False))
 
-
-def insert_betrayals(traitors):
-    connection, cursor = open_connection()
-    cursor.execute("CREATE TABLE IF NOT EXISTS betrayals (traitor_id integer, betrayal_date text )")
-    for traitor_id in traitors:
-        new_tuple = [(traitor_id, datetime.today().isoformat())]
-        cursor.execute("INSERT INTO betrayals(traitor_id, betrayal_date) VALUES(?, ?)", new_tuple)
     connection.commit()
     connection.close()

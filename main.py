@@ -1,5 +1,7 @@
+# Standard modules
+import argparse
 import logging
-
+# Custom modules
 import logging_config
 import database
 import twitter_api
@@ -15,11 +17,19 @@ def publish_usernames(following, user_ids):
         user = twitter_api.get_user(user_id)
         if user is not None:
             message = pattern.format(user.name, user.screen_name)
-            twitter_api.send_direct_message(message)
+            if args.quiet:
+                logging.info(message)
+            else:
+                twitter_api.send_direct_message(message)
 
 
 # Main function-----------------------------------------------------------------
 logging.info('Twitter Supervisor launched!')
+
+# Command line parsing
+parser = argparse.ArgumentParser()
+parser.add_argument("--quiet", help="Disable the sending of direct messages", action="store_true")
+args = parser.parse_args()
 
 # Retrieve the previous followers set
 previous_followers = database.get_previous_followers_set()
