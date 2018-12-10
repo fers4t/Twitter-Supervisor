@@ -4,7 +4,7 @@
 ## What is Twitter Supervisor?
 The goal of Twitter Supervisor is to provide small but useful functionalities for any Twitter user:
 * Detection of unfollowers: it sends a direct message to your account to inform you if someone unfollow you.
-* [The development of other functionalities is ongoing]
+* [The development of other features is ongoing]
 
 ## Requirements
 * **Python 3.5 or 3.6** (There are problems with 3.7 and older versions have not been tested) and **pip**
@@ -17,7 +17,7 @@ the token and their secrets which are required to access the Twitter API. (One o
 * Create a `config.py` file in the project directory, where you will put the API keys and the id of the account you want to supervise.
 It should look like this:
 
-	```
+	```python
 	# Key, token & secrets
 	CONSUMER_KEY = "..."
 	CONSUMER_SECRET = "..."
@@ -28,8 +28,14 @@ It should look like this:
 	USERNAME = "@yourusername"
 	```
 
+## Tests
+in the project directory, run: 
+```bash
+$ pytest tests
+``` 
+
 ## How to use it?
-Run `python main.py`(Windows) or `python3 main.py`(Linux) in a shell in the project directory:
+Run `$ python main.py`(Windows) or `$ python3 main.py`(Linux):
 * the first time it will only create a `followers.db` SQLite database (containing the IDs of your followers) and a `.log` file.
 * Then, each time this command is run, it will send a direct message to the specified Twitter account (from itself) to tell you who are the followers you have gained or lost in the meantime.
 
