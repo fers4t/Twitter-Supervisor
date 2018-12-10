@@ -12,7 +12,7 @@ class Messaging:
         if following:
             pattern = '{0} (@{1}) follows you now.'
         else:
-            pattern = '{0} (@{1}) unfollowed you.'
+            pattern = '{0} (@{1}) stopped following you.'
         for user_id in user_ids:
             user = self.twitter_api.get_user(user_id)
             if user is not None:
