@@ -3,29 +3,9 @@ import argparse
 import logging
 # Custom dependencies
 import config
-from twittersupervisor import logging_config
-from twittersupervisor.twitter_api import TwitterApi
-from twittersupervisor.database import Database
+import logging_config
+from twittersupervisor import TwitterApi, Database, Messaging
 
-
-# Function to "publish" the name of the new followers & unfollowers-------------
-def publish_usernames(following, user_ids):
-    if following:
-        pattern = '{0} (@{1}) follows you now.'
-    else:
-        pattern = '{0} (@{1}) unfollowed you.'
-    for user_id in user_ids:
-        user = twitter_api.get_user(user_id)
-        if user is not None:
-            message = pattern.format(user.name, user.screen_name)
-            if args.quiet:
-                logging.info(message)
-            else:
-                twitter_api.send_direct_message(message)
-
-
-# Main function-----------------------------------------------------------------
-logging.info('Twitter Supervisor launched!')
 
 # Command line parsing
 parser = argparse.ArgumentParser()
@@ -33,9 +13,18 @@ parser.add_argument("--quiet", help="Disable the sending of direct messages", ac
 args = parser.parse_args()
 
 # Setup config
+# TODO Retrieve config data from:
+#  - a yaml/json/ini config file (especially for Twitter API credentials)
+#  - command line arguments (log and database files)
+#  - default values
+#  If the Twitter API credentials are not found, handle this error case
+logging_config.set_logging_config("twitter_supervisor.log")
 twitter_api = TwitterApi(config.USERNAME, config.CONSUMER_KEY, config.CONSUMER_SECRET, config.ACCESS_TOKEN,
                          config.ACCESS_TOKEN_SECRET)
 database = Database("followers.db")
+
+# Main function---------------------------------------------------------------------------------------------------------
+logging.info('Twitter Supervisor launched!')
 
 # Retrieve the previous followers set
 previous_followers = database.get_previous_followers_set()
@@ -43,6 +32,9 @@ previous_followers_number = len(previous_followers)
 
 # Get the current followers set
 current_followers = twitter_api.get_followers_set()
+# TODO Handle cases:
+#  1) the user really doesn't have any follower :(
+#  2) the API is unreachable/ doesn't reply
 if current_followers is None:
     quit()
 followers_number = len(current_followers)
@@ -58,8 +50,9 @@ if previous_followers_number == 0:
           "for later use of the program...")
 else:
     logging.info("Previous number of followers: {}".format(previous_followers_number))
-    publish_usernames(True, new_followers)
-    publish_usernames(False, traitors)
+    messaging = Messaging(twitter_api, args)
+    messaging.announce_follow_event(True, new_followers)
+    messaging.announce_follow_event(False, traitors)
 
 # Save the followers set in DB if there is change
 if len(new_followers) == 0 and len(traitors) == 0:
