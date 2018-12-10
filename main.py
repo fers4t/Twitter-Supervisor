@@ -3,8 +3,9 @@ import argparse
 import logging
 # Custom dependencies
 import config
-from twittersupervisor import database, logging_config
+from twittersupervisor import logging_config
 from twittersupervisor.twitter_api import TwitterApi
+from twittersupervisor.database import Database
 
 
 # Function to "publish" the name of the new followers & unfollowers-------------
@@ -34,6 +35,7 @@ args = parser.parse_args()
 # Setup config
 twitter_api = TwitterApi(config.USERNAME, config.CONSUMER_KEY, config.CONSUMER_SECRET, config.ACCESS_TOKEN,
                          config.ACCESS_TOKEN_SECRET)
+database = Database("followers.db")
 
 # Retrieve the previous followers set
 previous_followers = database.get_previous_followers_set()
@@ -52,8 +54,8 @@ traitors = previous_followers - current_followers
 
 # If there are no followers saved in DB, we consider it is the first use
 if previous_followers_number == 0:
-    print("Thank you for using Twitter Supervisor, we are saving your followers\
-     for later use of the program...")
+    print("Thank you for using Twitter Supervisor, we are saving your followers"
+          "for later use of the program...")
 else:
     logging.info("Previous number of followers: {}".format(previous_followers_number))
     publish_usernames(True, new_followers)
