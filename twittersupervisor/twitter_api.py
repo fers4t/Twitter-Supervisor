@@ -1,4 +1,5 @@
 from twitter import Api, error
+from unittest import mock
 import logging
 
 
@@ -14,8 +15,8 @@ class TwitterApi:
         try:
             return set(self.api.GetFollowerIDs())
         except error.TwitterError as e:
-            logging.critical('Unable to retrieve followers id list: {}'.format(e.message))
-            return None
+            logging.critical('Twitter Supervisor is unable to get the user\'s followers IDs list: {}'.format(e.message))
+            quit(1)
 
     def get_user(self, user_id):
         try:

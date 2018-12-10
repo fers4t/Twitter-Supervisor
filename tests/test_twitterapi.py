@@ -1,10 +1,10 @@
-import unittest
+from unittest import TestCase
 import config
 from twittersupervisor import TwitterApi
 from tests import test_data
 
 
-class ApiTest (unittest.TestCase):
+class ApiTest (TestCase):
 
     def setUp(self):
         self.twitter_api = TwitterApi(config.USERNAME, config.CONSUMER_KEY, config.CONSUMER_SECRET, config.ACCESS_TOKEN,

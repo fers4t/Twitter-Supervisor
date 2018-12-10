@@ -6,7 +6,6 @@ import config
 import logging_config
 from twittersupervisor import TwitterApi, Database, Messaging
 
-
 # Command line parsing
 parser = argparse.ArgumentParser()
 parser.add_argument("--quiet", help="Disable the sending of direct messages", action="store_true")
@@ -32,11 +31,6 @@ previous_followers_number = len(previous_followers)
 
 # Get the current followers set
 current_followers = twitter_api.get_followers_set()
-# TODO Handle cases:
-#  1) the user really doesn't have any follower :(
-#  2) the API is unreachable/ doesn't reply
-if current_followers is None:
-    quit()
 followers_number = len(current_followers)
 logging.info("Current number of followers: {}".format(followers_number))
 
