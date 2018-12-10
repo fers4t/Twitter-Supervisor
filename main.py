@@ -1,8 +1,10 @@
-# Standard modules
+# External dependencies
 import argparse
 import logging
-# Custom modules
-from twittersupervisor import database, twitter_api, logging_config
+# Custom dependencies
+import config
+from twittersupervisor import database, logging_config
+from twittersupervisor.twitter_api import TwitterApi
 
 
 # Function to "publish" the name of the new followers & unfollowers-------------
@@ -28,6 +30,10 @@ logging.info('Twitter Supervisor launched!')
 parser = argparse.ArgumentParser()
 parser.add_argument("--quiet", help="Disable the sending of direct messages", action="store_true")
 args = parser.parse_args()
+
+# Setup config
+twitter_api = TwitterApi(config.USERNAME, config.CONSUMER_KEY, config.CONSUMER_SECRET, config.ACCESS_TOKEN,
+                         config.ACCESS_TOKEN_SECRET)
 
 # Retrieve the previous followers set
 previous_followers = database.get_previous_followers_set()
