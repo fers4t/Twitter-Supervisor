@@ -2,9 +2,8 @@
 import argparse
 import logging
 # Custom dependencies
-import config
+from twittersupervisor import ConfigFileParser, Database, Messaging, TwitterApi
 import logging_config
-from twittersupervisor import TwitterApi, Database, Messaging
 
 # Command line parsing
 parser = argparse.ArgumentParser()
@@ -13,14 +12,15 @@ args = parser.parse_args()
 
 # Setup config
 # TODO Retrieve config data from:
-#  - a yaml/json/ini config file (especially for Twitter API credentials)
-#  - command line arguments (log and database files)
-#  - default values
-#  If the Twitter API credentials are not found, handle this error case
-logging_config.set_logging_config("twitter_supervisor.log")
-twitter_api = TwitterApi(config.USERNAME, config.CONSUMER_KEY, config.CONSUMER_SECRET, config.ACCESS_TOKEN,
-                         config.ACCESS_TOKEN_SECRET)
-database = Database("followers.db")
+#  - command line arguments (config, and database files)
+# Default values
+config_file_name = "config.json"
+log_file_name = "twitter_supervisor.log"
+
+logging_config.set_logging_config(log_file_name)
+config = ConfigFileParser(config_file_name)
+twitter_api = TwitterApi(config.get_twitter_api_credentials())
+database = Database(config.get_database_file())
 
 # Main function---------------------------------------------------------------------------------------------------------
 logging.info('Twitter Supervisor launched!')

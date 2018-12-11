@@ -14,19 +14,21 @@ the token and their secrets which are required to access the Twitter API. (One o
 
 ## Installation
 * Clone the project repository on your machine.
-* Create a `config.py` file in the project directory, where you will put the API keys and the id of the account you want to supervise.
+* Create a `config.json` file in the project directory, where you will put the API keys, the id of the account you want to supervise, and the name of the SQLite database file where the app data will be stored.
 It should look like this:
 
-	```python
-	# Key, token & secrets
-	CONSUMER_KEY = "..."
-	CONSUMER_SECRET = "..."
-	ACCESS_TOKEN = "..."
-	ACCESS_TOKEN_SECRET = "..."
-
-	# user
-	USERNAME = "@yourusername"
-	```
+    ```json
+    {
+      "twitter_api": {
+        "username": "@aTwitterUserName",
+        "consumer_key": "...",
+        "consumer_secret": "...",
+        "access_token": "...",
+        "access_token_secret": "..."
+      },
+      "database_file": "followers.db"
+    }
+    ```
 
 ## Tests
 in the project directory, run: 

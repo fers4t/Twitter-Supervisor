@@ -1,16 +1,14 @@
 from unittest import TestCase, mock
 from argparse import Namespace
 
-import config
-from twittersupervisor import Messaging, TwitterApi
+from twittersupervisor import Messaging, TwitterApi, ConfigFileParser
 from tests import test_data
 
 
 class TestMessaging(TestCase):
 
     def setUp(self):
-        self.twitter_api = TwitterApi(config.USERNAME, config.CONSUMER_KEY, config.CONSUMER_SECRET, config.ACCESS_TOKEN,
-                                      config.ACCESS_TOKEN_SECRET)
+        self.twitter_api = TwitterApi(ConfigFileParser('config.json').get_twitter_api_credentials())
 
     def test_announce_follow_event(self):
         with mock.patch('twittersupervisor.TwitterApi.send_direct_message') as sdm:

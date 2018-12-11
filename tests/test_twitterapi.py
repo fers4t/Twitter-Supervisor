@@ -1,14 +1,12 @@
 from unittest import TestCase
-import config
-from twittersupervisor import TwitterApi
+from twittersupervisor import ConfigFileParser, TwitterApi
 from tests import test_data
 
 
 class ApiTest (TestCase):
 
     def setUp(self):
-        self.twitter_api = TwitterApi(config.USERNAME, config.CONSUMER_KEY, config.CONSUMER_SECRET, config.ACCESS_TOKEN,
-                                      config.ACCESS_TOKEN_SECRET)
+        self.twitter_api = TwitterApi(ConfigFileParser('config.json').get_twitter_api_credentials())
 
     def test_get_followers(self):
         followers_set = self.twitter_api.get_followers_set()
