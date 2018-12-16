@@ -7,7 +7,7 @@ class ConfigFileParser:
     # Default values
     default_db_file = "followers.db"
 
-    # TODO catch no file found exception?
+    # TODO Put "existence check" of the config file here ?
     def __init__(self, config_file_name):
         self.config_file_name = config_file_name
         self.config = json.load(open(config_file_name, 'r'))
@@ -17,7 +17,7 @@ class ConfigFileParser:
         try:
             return self.config["twitter_api"]
         except KeyError as e:
-            logging.critical("No valid Twitter configuration was found, please correct/create {} and retry !"
+            logging.critical("No valid Twitter API credentials were found in \"{}\", please correct it and retry !"
                              .format(self.config_file_name))
             quit(1)
 
@@ -25,6 +25,6 @@ class ConfigFileParser:
         try:
             return self.config["database_file"]
         except KeyError as e:
-            logging.info("No database filename was specified in config.json. Default value \"{}\" will be used."
-                         .format(self.default_db_file))
+            logging.info("No database filename is specified in {}. Default value \"{}\" will be used."
+                         .format(self.config_file_name, self.default_db_file))
             return self.default_db_file
