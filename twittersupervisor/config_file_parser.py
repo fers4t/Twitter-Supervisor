@@ -13,23 +13,23 @@ class ConfigFileParser:
         self.config_file_name = config_file_name
         self.config = json.load(open(config_file_name, 'r'))
 
-    # TODO Log errors
+    # TODO Check if the credentials work?
     def get_twitter_api_credentials(self):
         if "twitter_api" in self.config:
             if "username" not in self.config["twitter_api"]:
-                raise KeyError("No Twitter username found in {}".format(self.config_file_name))
+                raise KeyError("No \"twitter_api\" \"username\" found in {}".format(self.config_file_name))
             elif "consumer_key" not in self.config["twitter_api"]:
-                raise KeyError("No Twitter API consumer key found in {}".format(self.config_file_name))
+                raise KeyError("No \"twitter_api\" \"consumer_key\" key found in {}".format(self.config_file_name))
             elif "consumer_secret" not in self.config["twitter_api"]:
-                raise KeyError("No Twitter API consumer secret found in {}".format(self.config_file_name))
+                raise KeyError("No \"twitter_api\" \"consumer_secret\" key found in {}".format(self.config_file_name))
             elif "access_token" not in self.config["twitter_api"]:
-                raise KeyError("No Twitter API access token found in {}".format(self.config_file_name))
+                raise KeyError("No \"twitter_api\" \"access_token\" key found in {}".format(self.config_file_name))
             elif "access_token_secret" not in self.config["twitter_api"]:
-                raise KeyError("No Twitter API access token secret found in {}".format(self.config_file_name))
+                raise KeyError("No \"twitter_api\" \"access_token_secret\" key found in {}".format(self.config_file_name))
             else:
                 return self.config["twitter_api"]
         else:
-            raise KeyError("No Twitter API credentials found in {}".format(self.config_file_name))
+            raise KeyError("No \"twitter_api\" key found in {}".format(self.config_file_name))
 
     def get_database_file(self):
         try:

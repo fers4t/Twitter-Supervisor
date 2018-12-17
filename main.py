@@ -27,9 +27,14 @@ if args.config:
         quit(1)
 logging_config.set_logging_config(log_file_name)
 config = ConfigFileParser(config_file_name)
-twitter_api = TwitterApi(config.get_twitter_api_credentials())
+try:
+    twitter_api = TwitterApi(config.get_twitter_api_credentials())
+except KeyError as e:
+    logging.critical(e.args[0])
+    raise
 database = None
 if args.database:
+    # TODO check if database file name is valid (end with .db, no weird character...)
     database = Database(args.database[0])
 else:
     database = Database(config.get_database_file())
