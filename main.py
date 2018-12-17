@@ -18,12 +18,12 @@ parser.add_argument("--config", help="Specify which configuration file to use. I
 parser.add_argument("--database", help="Specify which SQLite .db file to use", nargs=1, metavar="database_file")
 args = parser.parse_args()
 
-# Setup config
+# Setup configuration
 if args.config:
     if os.path.isfile(args.config[0]):
         config_file_name = args.config[0]
     else:
-        logging.critical("Incorrect argument: %s is not file or does not exist.", args.config[0])
+        logging.critical("Incorrect argument: %s is not a file or does not exist.", args.config[0])
         quit(1)
 logging_config.set_logging_config(log_file_name)
 config = ConfigFileParser(config_file_name)
