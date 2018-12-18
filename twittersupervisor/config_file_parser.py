@@ -1,8 +1,6 @@
 import json
 import logging
 
-# TODO Create an associated test class
-
 
 class ConfigFileParser:
 
@@ -31,7 +29,7 @@ class ConfigFileParser:
         else:
             raise KeyError("No \"twitter_api\" key found in {}".format(self.config_file_name))
 
-    def get_database_file(self):
+    def get_database_filename(self):
         try:
             return self.config["database_file"]
         except KeyError as e:

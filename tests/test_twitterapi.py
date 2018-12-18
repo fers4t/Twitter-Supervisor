@@ -1,12 +1,12 @@
 from unittest import TestCase
 from twittersupervisor import ConfigFileParser, TwitterApi
-from tests import test_data
+from tests import shared_test_data
 
 
 class ApiTest (TestCase):
 
     def setUp(self):
-        self.twitter_api = TwitterApi(ConfigFileParser('config.json').get_twitter_api_credentials())
+        self.twitter_api = TwitterApi(ConfigFileParser(shared_test_data.CONFIG_FILE).get_twitter_api_credentials())
 
     def test_get_followers(self):
         followers_set = self.twitter_api.get_followers_set()
@@ -14,7 +14,7 @@ class ApiTest (TestCase):
         self.assertIsInstance(followers_set, set)
 
     def test_get_user(self):
-        user = self.twitter_api.get_user(test_data.twitter_user_id)
+        user = self.twitter_api.get_user(shared_test_data.TWITTER_USER_ID)
         self.assertIsNotNone(user)
         self.assertEqual(user.name, 'Twitter')
 

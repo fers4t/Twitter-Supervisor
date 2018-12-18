@@ -37,7 +37,7 @@ if args.database:
     # TODO check if database file name is valid (end with .db, no weird character...)
     database = Database(args.database[0])
 else:
-    database = Database(config.get_database_file())
+    database = Database(config.get_database_filename())
 
 logging.info("Configuration loaded from: {}".format(config.config_file_name))
 logging.info("Data saved in: {}".format(database.database_name))
