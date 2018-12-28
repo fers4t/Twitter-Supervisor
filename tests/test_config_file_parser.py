@@ -10,7 +10,6 @@ class TestConfigFileParser(TestCase):
                                   'access_token': 'anaccesstoken',
                                   'access_token_secret': 'anaccesstokensecret'}
     CORRECT_DB_NAME = 'a_database_file.db'
-    DEFAULT_DB_NAME = 'followers.db'
 
     def setUp(self):
         # Complete config file case
@@ -29,5 +28,5 @@ class TestConfigFileParser(TestCase):
 
     def test_get_database_file(self):
         self.assertEqual(self.complete_config.get_database_filename(), TestConfigFileParser.CORRECT_DB_NAME)
-        self.assertEqual(self.missing_twitter_api_sub_key.get_database_filename(), TestConfigFileParser.DEFAULT_DB_NAME)
-        self.assertEqual(self.missing_database.get_database_filename(), TestConfigFileParser.DEFAULT_DB_NAME)
+        self.assertEqual(self.missing_twitter_api_sub_key.get_database_filename(), ConfigFileParser.DEFAULT_DB_FILE)
+        self.assertEqual(self.missing_database.get_database_filename(), ConfigFileParser.DEFAULT_DB_FILE)
