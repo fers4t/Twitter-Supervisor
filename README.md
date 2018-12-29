@@ -3,19 +3,19 @@
 
 Twitter Supervisor informs you (via direct message) when someone follows or unfollows you.
 
-Additional features might be added in the (near) future: keep in database the data of the "betrayals", trends detection in the friends
-(people you are following) tweets...
+Additional features might be added in the (near) future: keeping track of the "betrayals", trends detection 
+in your friends (people you are following) tweets...
 
 ## Requirements
 * **Python 3.5 or 3.6** (There are problems with 3.7 and older versions have not been tested) and **pip**
-* **Having a (at least free) Twitter developer account** (https://developer.twitter.com/en/apply-for-access), to get the key,
-the token and their secrets, which are all required to access the Twitter API.
+* **Having a (at least free) Twitter developer account** (https://developer.twitter.com/en/apply-for-access), to get the
+ key, the token and their secrets, which are all required to access the Twitter API.
 
 ## Installation
 * Clone the project repository on your machine.
 * Run `pip install -Ur requirements.txt`
-* Create a `config.json` file in the project directory, where you will put the API keys, the id of the account you want to supervise, and the name of the SQLite database file where the app data will be stored.
-It should look like this:
+* Create a `config.json` file in the project directory, where you will put the API keys, the id of the account you want 
+to supervise, and the name of the SQLite database file where the app data will be stored. It should look like this:
 
     ```json
     {
@@ -35,11 +35,15 @@ in the project directory, run:
 ```bash
 $ pytest tests
 ``` 
-
+or if you want to test if the methods calling the Twitter API works too:
+```bash
+$ pytest tests --allow_api_call
+```
 ## How to use it?
 Run `$ python main.py`(Windows) or `$ python3 main.py`(Linux):
-* the first time it will only create a `followers.db` SQLite database (containing the IDs of your followers) and a `.log` file.
-* Then, each time this command is run, it will send a direct message to the specified Twitter account (from itself) to tell you who are the followers you have gained or lost in the meantime.
+* the first time it will only create a `followers.db` SQLite database (to store the app data) and a `.log` file.
+* Then, each time this command is run, the specified account (`"username"` key in `config.json`) will receive messages
+telling him who are the followers it has gained or lost in the meantime.
 
 > Pro-tip: the names of the new followers & unfollowers are in the log file too.
 
