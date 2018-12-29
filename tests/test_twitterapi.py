@@ -1,39 +1,43 @@
+import pytest
+from twitter import User, DirectMessage, TwitterError
 from unittest import TestCase
-from twitter import User, TwitterError
-from pytest import raises
 from twittersupervisor import ConfigFileParser, TwitterApi
 from tests import shared_test_data
 
 
-class ApiTest (TestCase):
+class ApiTest(TestCase):
     INCOMPLETE_CREDENTIALS = {'username': 'ausername', 'consumer_key': 'aconsumerkey',
-                                  'consumer_secret': 'aconsumersecret',
-                                  'access_token_secret': 'anaccesstokensecret'}
+                              'consumer_secret': 'aconsumersecret',
+                              'access_token_secret': 'anaccesstokensecret'}
 
     def setUp(self):
         self.twitter_api = TwitterApi(ConfigFileParser(shared_test_data.CONFIG_FILE).get_twitter_api_credentials())
 
     def test_init(self):
-        self.failUnlessRaises(TypeError, TwitterApi, None)
-        self.failUnlessRaises(KeyError, TwitterApi, ApiTest.INCOMPLETE_CREDENTIALS)
+        self.assertRaises(TypeError, TwitterApi, None)
+        self.assertRaises(KeyError, TwitterApi, ApiTest.INCOMPLETE_CREDENTIALS)
 
+    @pytest.mark.api_call
     def test_verify_credentials(self):
         user = self.twitter_api.verify_credentials()
-        self.assertIsNotNone(user)
         self.assertIsInstance(user, User)
         invalid_twitter_api = TwitterApi(ConfigFileParser(shared_test_data.COMPLETE_CONFIG_FILE)
                                          .get_twitter_api_credentials())
-        with raises(TwitterError):
+        with pytest.raises(TwitterError):
             invalid_twitter_api.verify_credentials()
 
+    @pytest.mark.api_call
     def test_get_followers(self):
         followers_set = self.twitter_api.get_followers_set()
-        self.assertIsNotNone(followers_set)
         self.assertIsInstance(followers_set, set)
 
+    @pytest.mark.api_call
     def test_get_user(self):
         user = self.twitter_api.get_user(shared_test_data.TWITTER_USER_ID)
-        self.assertIsNotNone(user)
+        self.assertIsInstance(user, User)
         self.assertEqual(user.name, 'Twitter')
 
-    # TODO implement "def test_send_message(self, text)" when this test will be skipable
+    @pytest.mark.api_call
+    def test_send_message(self):
+        message = self.twitter_api.send_direct_message("This is a test message.")
+        self.assertIsInstance(message, DirectMessage)
