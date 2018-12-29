@@ -9,9 +9,11 @@ class ApiTest(TestCase):
     INCOMPLETE_CREDENTIALS = {'username': 'ausername', 'consumer_key': 'aconsumerkey',
                               'consumer_secret': 'aconsumersecret',
                               'access_token_secret': 'anaccesstokensecret'}
+    CONFIG_FILE = 'config.json'
 
+    @pytest.mark.api_call
     def setUp(self):
-        self.twitter_api = TwitterApi(ConfigFileParser(shared_test_data.CONFIG_FILE).get_twitter_api_credentials())
+        self.twitter_api = TwitterApi(ConfigFileParser(ApiTest.CONFIG_FILE).get_twitter_api_credentials())
 
     def test_init(self):
         self.assertRaises(TypeError, TwitterApi, None)
@@ -36,6 +38,7 @@ class ApiTest(TestCase):
         user = self.twitter_api.get_user(shared_test_data.TWITTER_USER_ID)
         self.assertIsInstance(user, User)
         self.assertEqual(user.name, 'Twitter')
+        self.assertEqual(user.screen_name, 'Twitter')
 
     @pytest.mark.api_call
     def test_send_message(self):

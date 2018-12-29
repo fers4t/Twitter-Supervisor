@@ -2,7 +2,7 @@ __pycache__
 config\.json
 *.db
 *.log
-drafts/*
+drafts/
 
 # IDE
 \.idea/
