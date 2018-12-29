@@ -1,5 +1,6 @@
 from unittest import TestCase
 from twitter import User, TwitterError
+from pytest import raises
 from twittersupervisor import ConfigFileParser, TwitterApi
 from tests import shared_test_data
 
@@ -20,10 +21,10 @@ class ApiTest (TestCase):
         user = self.twitter_api.verify_credentials()
         self.assertIsNotNone(user)
         self.assertIsInstance(user, User)
-        # TODO determine why the assertion below fail
-        # invalid_twitter_api = TwitterApi(ConfigFileParser(shared_test_data.COMPLETE_CONFIG_FILE)
-        #                                  .get_twitter_api_credentials())
-        # self.assertRaises(TwitterError, invalid_twitter_api.verify_credentials())
+        invalid_twitter_api = TwitterApi(ConfigFileParser(shared_test_data.COMPLETE_CONFIG_FILE)
+                                         .get_twitter_api_credentials())
+        with raises(TwitterError):
+            invalid_twitter_api.verify_credentials()
 
     def test_get_followers(self):
         followers_set = self.twitter_api.get_followers_set()
