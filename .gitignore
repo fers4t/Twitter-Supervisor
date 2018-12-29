@@ -1,8 +1,9 @@
 __pycache__
-config\.py
+config\.json
 *.db
 *.log
-drafts/*
+drafts/
 
 # IDE
 \.idea/
+\.vs/

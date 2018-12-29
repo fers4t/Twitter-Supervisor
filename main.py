@@ -1,24 +1,59 @@
+# External dependencies
+import argparse
 import logging
-
+import os.path
+# Custom dependencies
+from twittersupervisor import ConfigFileParser, Database, Messaging, TwitterApi
 import logging_config
-import database
-import twitter_api
 
+# Default values
+config_file_name = "config.json"
+log_file_name = "twitter_supervisor.log"
 
-# Function to "publish" the name of the new followers & unfollowers-------------
-def publish_usernames(following, user_ids):
-    if following:
-        pattern = '{0} (@{1}) follows you now.'
+# Command line parsing--------------------------------------------------------------------------------------------------
+parser = argparse.ArgumentParser()
+parser.add_argument("--quiet", help="Disable the sending of direct messages", action="store_true")
+parser.add_argument("--config", help="Specify which configuration file to use. It must be a JSON file.",
+                    nargs=1, metavar="config_file")
+parser.add_argument("--database", help="Specify which SQLite .db file to use", nargs=1, metavar="database_file")
+args = parser.parse_args()
+
+# Setup configuration---------------------------------------------------------------------------------------------------
+logging_config.set_logging_config(log_file_name)
+
+# Config file
+if args.config:
+    if os.path.isfile(args.config[0]):
+        config_file_name = args.config[0]
     else:
-        pattern = '{0} (@{1}) unfollowed you.'
-    for user_id in user_ids:
-        user = twitter_api.get_user(user_id)
-        if user is not None:
-            message = pattern.format(user.name, user.screen_name)
-            twitter_api.send_direct_message(message)
+        logging.critical("Incorrect argument: \"{}\" is not a file or does not exist.".format(args.config[0]))
+        quit(1)
+config = ConfigFileParser(config_file_name)
 
+# Twitter API
+try:
+    twitter_api = TwitterApi(config.get_twitter_api_credentials())
+except KeyError as e:
+    logging.critical(e.args[0])
+    raise
+if twitter_api.verify_credentials() is None:
+    logging.critical("The Twitter API credentials in {} are not valid. Twitter Supervisor can not query the Twitter "
+                     "API and work properly without correct credentials.".format(config.config_file_name))
+    quit(2)
 
-# Main function-----------------------------------------------------------------
+# Database
+database = None
+if args.database:
+    # TODO check if database file name is valid (end with .db, no weird character...)
+    database = Database(args.database[0])
+else:
+    database = Database(config.get_database_filename())
+
+logging.info("Configuration loaded from: {}".format(config.config_file_name))
+logging.info("Data saved in: {}".format(database.database_name))
+logging.debug("Username: {}".format(twitter_api.username))
+
+# Main function---------------------------------------------------------------------------------------------------------
 logging.info('Twitter Supervisor launched!')
 
 # Retrieve the previous followers set
@@ -27,28 +62,26 @@ previous_followers_number = len(previous_followers)
 
 # Get the current followers set
 current_followers = twitter_api.get_followers_set()
-if current_followers is None:
-    quit()
 followers_number = len(current_followers)
 logging.info("Current number of followers: {}".format(followers_number))
 
 # Comparison of the two sets of followers
 new_followers = current_followers - previous_followers
-unfollowers = previous_followers - current_followers
+traitors = previous_followers - current_followers
 
 # If there are no followers saved in DB, we consider it is the first use
 if previous_followers_number == 0:
-    print("Thank you for using Twitter Supervisor, we are saving your followers\
-     for later use of the program...")
+    print("Thank you for using Twitter Supervisor, we are saving your followers for later use of the program...")
 else:
     logging.info("Previous number of followers: {}".format(previous_followers_number))
-    publish_usernames(True, new_followers)
-    publish_usernames(False, unfollowers)
+    messaging = Messaging(twitter_api, args)
+    messaging.announce_follow_event(True, new_followers)
+    messaging.announce_follow_event(False, traitors)
 
 # Save the followers set in DB if there is change
-if len(new_followers) == 0 and len(unfollowers) == 0:
+if len(new_followers) == 0 and len(traitors) == 0:
     logging.info("\"[...] nihil novi sub sole.\" - Ecclesiastes 1:9")
 else:
-    database.update(new_followers, unfollowers)
+    database.update_followers_table(new_followers, traitors)
 
 logging.info("Twitter Supervisor ran successfully!")
