@@ -10,7 +10,7 @@ import logging_config
 config_file_name = "config.json"
 log_file_name = "twitter_supervisor.log"
 
-# Command line parsing
+# Command line parsing--------------------------------------------------------------------------------------------------
 parser = argparse.ArgumentParser()
 parser.add_argument("--quiet", help="Disable the sending of direct messages", action="store_true")
 parser.add_argument("--config", help="Specify which configuration file to use. It must be a JSON file.",
@@ -18,20 +18,30 @@ parser.add_argument("--config", help="Specify which configuration file to use. I
 parser.add_argument("--database", help="Specify which SQLite .db file to use", nargs=1, metavar="database_file")
 args = parser.parse_args()
 
-# Setup configuration
+# Setup configuration---------------------------------------------------------------------------------------------------
+logging_config.set_logging_config(log_file_name)
+
+# Config file
 if args.config:
     if os.path.isfile(args.config[0]):
         config_file_name = args.config[0]
     else:
-        logging.critical("Incorrect argument: %s is not a file or does not exist.", args.config[0])
+        logging.critical("Incorrect argument: \"{}\" is not a file or does not exist.".format(args.config[0]))
         quit(1)
-logging_config.set_logging_config(log_file_name)
 config = ConfigFileParser(config_file_name)
+
+# Twitter API
 try:
     twitter_api = TwitterApi(config.get_twitter_api_credentials())
 except KeyError as e:
     logging.critical(e.args[0])
     raise
+if twitter_api.verify_credentials() is None:
+    logging.critical("The Twitter API credentials in {} are not valid. Twitter Supervisor can not query the Twitter "
+                     "API and work properly without correct credentials.".format(config.config_file_name))
+    quit(2)
+
+# Database
 database = None
 if args.database:
     # TODO check if database file name is valid (end with .db, no weird character...)

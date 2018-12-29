@@ -2,3 +2,4 @@ LEMONDEFR_USER_ID = 24744541
 TWITTER_USER_ID = 783214
 
 CONFIG_FILE = 'config.json'
+COMPLETE_CONFIG_FILE = 'test_data/complete_config.json'

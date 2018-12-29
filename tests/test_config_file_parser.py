@@ -1,5 +1,5 @@
 from unittest import TestCase
-
+from tests import shared_test_data
 from twittersupervisor import ConfigFileParser
 
 
@@ -13,7 +13,7 @@ class TestConfigFileParser(TestCase):
 
     def setUp(self):
         # Complete config file case
-        self.complete_config = ConfigFileParser("test_data/complete_config.json")
+        self.complete_config = ConfigFileParser(shared_test_data.COMPLETE_CONFIG_FILE)
         # Missing "database_name" entry case
         self.missing_database = ConfigFileParser("test_data/missing_database_config.json")
         # Missing "twitter_api" sub-key case

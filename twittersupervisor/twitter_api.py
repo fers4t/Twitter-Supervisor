@@ -3,6 +3,7 @@ import logging
 
 
 class TwitterApi:
+
     def __init__(self, twitter_credentials):
         try:
             self.username = twitter_credentials["username"]
@@ -10,17 +11,26 @@ class TwitterApi:
                            consumer_secret=twitter_credentials["consumer_secret"],
                            access_token_key=twitter_credentials["access_token"],
                            access_token_secret=twitter_credentials["access_token_secret"])
-        except KeyError as e:
-            logging.critical("The JSON configuration file containing Twitter API credentials is incorrect. Correct it "
-                             "and retry !")
-            quit(2)
+        except KeyError as key_error:
+            logging.critical("Invalid \"twitter_credentials\" argument: {}".format(key_error.args[0]))
+            raise
+        except TypeError as type_error:
+            logging.critical("Incorrect \"twitter_credentials\" argument: {}".format(type_error.args[0]))
+            raise
+
+    def verify_credentials(self):
+        try:
+            return self.api.VerifyCredentials(None, True)
+        except error.TwitterError as e:
+            logging.error('An error happened while checking the Twitter API credentials validity: {}'.format(e.message))
+            raise
 
     def get_followers_set(self):
         try:
             return set(self.api.GetFollowerIDs())
         except error.TwitterError as e:
             logging.critical('Twitter Supervisor is unable to get the user\'s followers IDs list: {}'.format(e.message))
-            quit(3)
+            raise
 
     def get_user(self, user_id):
         try:
