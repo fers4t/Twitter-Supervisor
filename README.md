@@ -9,7 +9,7 @@ in your friends (people you are following) tweets...
 [![Build Status](https://travis-ci.com/QuentinJoder/Twitter-Supervisor.svg?branch=master)](https://travis-ci.com/QuentinJoder/Twitter-Supervisor)
 
 ## Requirements
-* **Python 3.5 or 3.6** (There are problems with 3.7 and older versions have not been tested) and **pip**
+* **Python 3.4 or more** (older versions are not tested) and **pip**
 * **Having a (at least free) Twitter developer account** (https://developer.twitter.com/en/apply-for-access), to get the
  key, the token and their secrets, which are all required to access the Twitter API.
 
