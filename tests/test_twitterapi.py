@@ -11,9 +11,9 @@ class ApiTest(TestCase):
                               'access_token_secret': 'anaccesstokensecret'}
     CONFIG_FILE = 'config.json'
 
-    @pytest.mark.api_call
     def setUp(self):
-        self.twitter_api = TwitterApi(ConfigFileParser(ApiTest.CONFIG_FILE).get_twitter_api_credentials())
+        if self._testMethodName != 'test_init':
+            self.twitter_api = TwitterApi(ConfigFileParser(ApiTest.CONFIG_FILE).get_twitter_api_credentials())
 
     def test_init(self):
         self.assertRaises(TypeError, TwitterApi, None)
