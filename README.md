@@ -6,6 +6,8 @@ Twitter Supervisor informs you (via direct message) when someone follows or unfo
 Additional features might be added in the (near) future: keeping track of the "betrayals", trends detection 
 in your friends (people you are following) tweets...
 
+[![Build Status](https://travis-ci.com/QuentinJoder/Twitter-Supervisor.svg?branch=master)](https://travis-ci.com/QuentinJoder/Twitter-Supervisor)
+
 ## Requirements
 * **Python 3.5 or 3.6** (There are problems with 3.7 and older versions have not been tested) and **pip**
 * **Having a (at least free) Twitter developer account** (https://developer.twitter.com/en/apply-for-access), to get the
@@ -33,11 +35,11 @@ to supervise, and the name of the SQLite database file where the app data will b
 ## Tests
 in the project directory, run: 
 ```bash
-$ pytest tests
+$ pytest
 ``` 
-or if you want to test if the methods calling the Twitter API works too:
+and if you want to test if the methods calling the Twitter API works too:
 ```bash
-$ pytest tests --allow_api_call
+$ pytest --allow_api_call
 ```
 ## How to use it?
 Run `$ python main.py`(Windows) or `$ python3 main.py`(Linux):

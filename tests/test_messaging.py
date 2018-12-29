@@ -15,7 +15,7 @@ class TestMessaging(TestCase):
     def test_announce_follow_event(self):
         with mock.patch('twittersupervisor.TwitterApi.get_user') as get_user:
             get_user.return_value = User(id=783214, name="Twitter")
-            with mock.patch('twittersupervisor.TwitterApi.send_direct_message') as sdm:
+            with mock.patch('twittersupervisor.TwitterApi.send_direct_message', unsafe=True) as sdm:
                 # Case quiet
                 self.messaging = Messaging(self.twitter_api, Namespace(quiet=True))
                 self.messaging.announce_follow_event(True, [shared_test_data.TWITTER_USER_ID])
