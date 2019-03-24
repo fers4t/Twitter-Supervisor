@@ -19,12 +19,13 @@ class Database:
             raise
 
     def open_connection(self):
-        connection = psycopg2.connect(host=self.host, database=self.database_name, user=self.user, password=self.password)
+        connection = psycopg2.connect(host=self.host, database=self.database_name, user=self.user,
+                                      password=self.password)
         return connection, connection.cursor()
 
     def get_previous_followers_set(self):
         connection, cursor = self.open_connection()
-        cursor.execute("CREATE TABLE IF NOT EXISTS followers (id integer)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS followers (id BIGINT NOT NULL)")
         connection.commit()
         cursor.execute("SELECT * FROM followers")
         previous_followers_list = cursor.fetchall()
@@ -38,15 +39,15 @@ class Database:
         connection, cursor = self.open_connection()
 
         # Populate "followers" table
-        cursor.executemany("DELETE FROM followers WHERE id=?", self.id_generator(traitors))
-        cursor.executemany("INSERT INTO followers(id) VALUES(?)", self.id_generator(new_followers))
+        cursor.executemany("DELETE FROM followers WHERE id=%s", self.id_generator(traitors))
+        cursor.executemany("INSERT INTO followers(id) VALUES(%s)", self.id_generator(new_followers))
 
         # Create & populate "friendship_events" table
         cursor.execute("CREATE TABLE IF NOT EXISTS friendship_events"
-                       "(user_id integer, event_date text, follows integer)")
-        cursor.executemany("INSERT INTO friendship_events(user_id, event_date, follows) VALUES(?,?,?)",
+                       "(user_id BIGINT, event_date TIMESTAMP, follows BOOLEAN)")
+        cursor.executemany("INSERT INTO friendship_events(user_id, event_date, follows) VALUES(%s,%s,%s)",
                            self.event_generator(new_followers, True))
-        cursor.executemany("INSERT INTO friendship_events(user_id, event_date, follows) VALUES(?,?,?)",
+        cursor.executemany("INSERT INTO friendship_events(user_id, event_date, follows) VALUES(%s,%s,%s)",
                            self.event_generator(traitors, False))
 
         connection.commit()
@@ -58,9 +59,6 @@ class Database:
             yield (user_id,)
 
     @staticmethod
-    def event_generator(users_set, true):
+    def event_generator(users_set, is_a_follower):
         for user_id in users_set:
-            if true:
-                yield (user_id, datetime.today().isoformat(), 1,)
-            else:
-                yield (user_id, datetime.today().isoformat(), 0,)
+            yield (user_id, datetime.now(), is_a_follower,)
