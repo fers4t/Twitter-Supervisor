@@ -51,37 +51,40 @@ except KeyError as e:
 
 logging.info("Configuration loaded from: {}".format(config.config_file_name))
 logging.info("Data saved in: {}".format(database.database_name))
-logging.debug("Username: {}".format(twitter_api.username))
 
 # Main function---------------------------------------------------------------------------------------------------------
 logging.info('Twitter Supervisor launched!')
 
-# Retrieve the previous followers set
-previous_followers = database.get_previous_followers_set()
-previous_followers_number = len(previous_followers)
+users = database.get_users()
 
-# Get the current followers set
-current_followers = twitter_api.get_followers_set()
-followers_number = len(current_followers)
-logging.info("Current number of followers: {}".format(followers_number))
+for user_id in users:
 
-# Comparison of the two sets of followers
-new_followers = current_followers - previous_followers
-traitors = previous_followers - current_followers
+    # Retrieve the previous followers set
+    previous_followers = database.get_previous_followers_set(user_id)
+    previous_followers_number = len(previous_followers)
 
-# If there are no followers saved in DB, we consider it is the first use
-if previous_followers_number == 0:
-    print("Thank you for using Twitter Supervisor, we are saving your followers for later use of the program...")
-else:
-    logging.info("Previous number of followers: {}".format(previous_followers_number))
-    messaging = Messaging(twitter_api, args)
-    messaging.announce_follow_event(True, new_followers)
-    messaging.announce_follow_event(False, traitors)
+    # Get the current followers set
+    current_followers = twitter_api.get_followers_set()
+    followers_number = len(current_followers)
+    logging.info("Current number of followers: {}".format(followers_number))
 
-# Save the followers set in DB if there is change
-if len(new_followers) == 0 and len(traitors) == 0:
-    logging.info("\"[...] nihil novi sub sole.\" - Ecclesiastes 1:9")
-else:
-    database.update_followers_table(new_followers, traitors)
+    # Comparison of the two sets of followers
+    new_followers = current_followers - previous_followers
+    traitors = previous_followers - current_followers
+
+    # If there are no followers saved in DB, we consider it is the first use
+    if previous_followers_number == 0:
+        print("Thank you for using Twitter Supervisor, we are saving your followers for later use of the program...")
+    else:
+        logging.info("Previous number of followers: {}".format(previous_followers_number))
+        messaging = Messaging(twitter_api, args)
+        messaging.announce_follow_event(True, new_followers, user_id)
+        messaging.announce_follow_event(False, traitors, user_id)
+
+    # Save the followers set in DB if there is change
+    if len(new_followers) == 0 and len(traitors) == 0:
+        logging.info("\"[...] nihil novi sub sole.\" - Ecclesiastes 1:9")
+    else:
+        database.update_followers_table(user_id, new_followers, traitors)
 
 logging.info("Twitter Supervisor ran successfully!")

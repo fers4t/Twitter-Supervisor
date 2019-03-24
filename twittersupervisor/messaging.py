@@ -7,7 +7,7 @@ class Messaging:
         self.twitter_api = api
         self.args = args
 
-    def announce_follow_event(self, following, user_ids):
+    def announce_follow_event(self, following, user_ids, client_id):
         # TODO i18n of the message ?
         if following:
             pattern = '{0} (@{1}) follows you now.'
@@ -20,4 +20,4 @@ class Messaging:
                 if self.args.quiet:
                     logging.info(message)
                 else:
-                    self.twitter_api.send_direct_message(message)
+                    self.twitter_api.send_direct_message(message, client_id)

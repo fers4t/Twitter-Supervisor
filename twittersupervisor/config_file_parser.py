@@ -9,9 +9,7 @@ class ConfigFileParser:
 
     def get_twitter_api_credentials(self):
         if "twitter_api" in self.config:
-            if "username" not in self.config["twitter_api"]:
-                raise KeyError("No \"twitter_api\" \"username\" found in {}".format(self.config_file_name))
-            elif "consumer_key" not in self.config["twitter_api"]:
+            if "consumer_key" not in self.config["twitter_api"]:
                 raise KeyError("No \"twitter_api\" \"consumer_key\" key found in {}".format(self.config_file_name))
             elif "consumer_secret" not in self.config["twitter_api"]:
                 raise KeyError("No \"twitter_api\" \"consumer_secret\" key found in {}".format(self.config_file_name))

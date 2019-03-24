@@ -23,11 +23,16 @@ class Database:
                                       password=self.password)
         return connection, connection.cursor()
 
-    def get_previous_followers_set(self):
+    def get_users(self):
         connection, cursor = self.open_connection()
-        cursor.execute("CREATE TABLE IF NOT EXISTS followers (id BIGINT NOT NULL)")
-        connection.commit()
-        cursor.execute("SELECT * FROM followers")
+        cursor.execute("SELECT * FROM users")
+        users_list = cursor.fetchone()
+        connection.close()
+        return users_list
+
+    def get_previous_followers_set(self, user_id):
+        connection, cursor = self.open_connection()
+        cursor.execute("SELECT * FROM followers WHERE followed_id=%s", [user_id])
         previous_followers_list = cursor.fetchall()
         connection.close()
         previous_followers = set()
@@ -35,30 +40,30 @@ class Database:
             previous_followers.add(int(follower[0]))
         return previous_followers
 
-    def update_followers_table(self, new_followers, traitors):
+    def update_followers_table(self, user_id, new_followers, traitors):
         connection, cursor = self.open_connection()
 
-        # Populate "followers" table
-        cursor.executemany("DELETE FROM followers WHERE id=%s", self.id_generator(traitors))
-        cursor.executemany("INSERT INTO followers(id) VALUES(%s)", self.id_generator(new_followers))
+        # Update "followers" table
+        cursor.executemany("DELETE FROM followers WHERE followed_id=%s AND follower_id=%s",
+                           self.id_generator(user_id, traitors))
+        cursor.executemany("INSERT INTO followers(followed_id, follower_id) VALUES(%s, %s)",
+                           self.id_generator(user_id, new_followers))
 
-        # Create & populate "friendship_events" table
-        cursor.execute("CREATE TABLE IF NOT EXISTS friendship_events"
-                       "(user_id BIGINT, event_date TIMESTAMP, follows BOOLEAN)")
-        cursor.executemany("INSERT INTO friendship_events(user_id, event_date, follows) VALUES(%s,%s,%s)",
-                           self.event_generator(new_followers, True))
-        cursor.executemany("INSERT INTO friendship_events(user_id, event_date, follows) VALUES(%s,%s,%s)",
-                           self.event_generator(traitors, False))
+        # Update "friendship_events" table
+        cursor.executemany("INSERT INTO friendship_events(followed_id, follower_id, event_date, follows)"
+                           "VALUES(%s,%s,%s,%s)", self.event_generator(user_id, new_followers, True))
+        cursor.executemany("INSERT INTO friendship_events(followed_id, follower_id, event_date, follows)"
+                           "VALUES(%s,%s,%s,%s)", self.event_generator(user_id, traitors, False))
 
         connection.commit()
         connection.close()
 
     @staticmethod
-    def id_generator(followers_set):
-        for user_id in followers_set:
-            yield (user_id,)
+    def id_generator(user_id, followers_set):
+        for follower_id in followers_set:
+            yield (user_id, follower_id,)
 
     @staticmethod
-    def event_generator(users_set, is_a_follower):
-        for user_id in users_set:
-            yield (user_id, datetime.now(), is_a_follower,)
+    def event_generator(followed_id, followers_set, is_a_follower):
+        for follower_id in followers_set:
+            yield (followed_id, follower_id, datetime.now(), is_a_follower,)

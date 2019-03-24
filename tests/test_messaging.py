@@ -10,6 +10,7 @@ class TestMessaging(TestCase):
     def setUp(self):
         self.twitter_api = TwitterApi(ConfigFileParser(shared_test_data.COMPLETE_CONFIG_FILE)
                                       .get_twitter_api_credentials())
+        self.test_id = 1
 
     # TODO Improve this test case (correct message, special characters case...)
     def test_announce_follow_event(self):
@@ -18,9 +19,9 @@ class TestMessaging(TestCase):
             with mock.patch('twittersupervisor.TwitterApi.send_direct_message', unsafe=True) as sdm:
                 # Case quiet
                 self.messaging = Messaging(self.twitter_api, Namespace(quiet=True))
-                self.messaging.announce_follow_event(True, [shared_test_data.TWITTER_USER_ID])
+                self.messaging.announce_follow_event(True, [shared_test_data.TWITTER_USER_ID], self.test_id)
                 sdm.assert_not_called()
                 # Case "not quiet"
                 self.messaging.args = Namespace(quiet=False)
-                self.messaging.announce_follow_event(True, [shared_test_data.TWITTER_USER_ID])
+                self.messaging.announce_follow_event(True, [shared_test_data.TWITTER_USER_ID], self.test_id)
                 sdm.assert_called_once()

@@ -6,7 +6,6 @@ class TwitterApi:
 
     def __init__(self, twitter_credentials):
         try:
-            self.username = twitter_credentials["username"]
             self.api = Api(consumer_key=twitter_credentials["consumer_key"],
                            consumer_secret=twitter_credentials["consumer_secret"],
                            access_token_key=twitter_credentials["access_token"],
@@ -39,10 +38,10 @@ class TwitterApi:
             logging.error('An error happened while searching for user n°{0}: {1}'.format(user_id, e.message))
             return None
 
-    def send_direct_message(self, text):
+    def send_direct_message(self, text, user):
         logging.info('Sending direct message: \"{}\"'.format(text))
         try:
-            return self.api.PostDirectMessage(text, screen_name=self.username)
+            return self.api.PostDirectMessage(text, screen_name=user)
         except error.TwitterError as e:
             logging.error('Unable to send direct message: {}'.format(e.message))
             return None

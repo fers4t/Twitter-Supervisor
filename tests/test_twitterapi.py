@@ -1,19 +1,21 @@
 import pytest
 from twitter import User, DirectMessage, TwitterError
 from unittest import TestCase
-from twittersupervisor import ConfigFileParser, TwitterApi
+from twittersupervisor import ConfigFileParser, TwitterApi, Database
 from tests import shared_test_data
 
 
 class ApiTest(TestCase):
-    INCOMPLETE_CREDENTIALS = {'username': 'ausername', 'consumer_key': 'aconsumerkey',
+    INCOMPLETE_CREDENTIALS = {'consumer_key': 'aconsumerkey',
                               'consumer_secret': 'aconsumersecret',
                               'access_token_secret': 'anaccesstokensecret'}
     CONFIG_FILE = 'config.json'
 
     def setUp(self):
         if self._testMethodName != 'test_init':
-            self.twitter_api = TwitterApi(ConfigFileParser(ApiTest.CONFIG_FILE).get_twitter_api_credentials())
+            config = ConfigFileParser(ApiTest.CONFIG_FILE)
+            self.twitter_api = TwitterApi(config.get_twitter_api_credentials())
+            self.client_id = Database(config.get_database_credentials())
 
     def test_init(self):
         self.assertRaises(TypeError, TwitterApi, None)

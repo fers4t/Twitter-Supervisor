@@ -5,7 +5,7 @@ from twittersupervisor import ConfigFileParser
 
 
 class TestConfigFileParser(TestCase):
-    CORRECT_TWITTER_API_CONFIG = {'username': 'ausername', 'consumer_key': 'aconsumerkey',
+    CORRECT_TWITTER_API_CONFIG = {'consumer_key': 'aconsumerkey',
                                   'consumer_secret': 'aconsumersecret',
                                   'access_token': 'anaccesstoken',
                                   'access_token_secret': 'anaccesstokensecret'}
