@@ -15,7 +15,7 @@ class ApiTest(TestCase):
         if self._testMethodName != 'test_init':
             config = ConfigFileParser(ApiTest.CONFIG_FILE)
             self.twitter_api = TwitterApi(config.get_twitter_api_credentials())
-            self.client_id = Database(config.get_database_credentials())
+            self.client_id = Database(config.get_database_credentials()).get_users()
 
     def test_init(self):
         self.assertRaises(TypeError, TwitterApi, None)
@@ -44,5 +44,5 @@ class ApiTest(TestCase):
 
     @pytest.mark.api_call
     def test_send_message(self):
-        message = self.twitter_api.send_direct_message("This is a test message.")
+        message = self.twitter_api.send_direct_message("This is a test message.", self.client_id)
         self.assertIsInstance(message, DirectMessage)

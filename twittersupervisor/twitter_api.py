@@ -38,10 +38,10 @@ class TwitterApi:
             logging.error('An error happened while searching for user n°{0}: {1}'.format(user_id, e.message))
             return None
 
-    def send_direct_message(self, text, user):
+    def send_direct_message(self, text, user_id):
         logging.info('Sending direct message: \"{}\"'.format(text))
         try:
-            return self.api.PostDirectMessage(text, screen_name=user)
+            return self.api.PostDirectMessage(text, user_id=user_id)
         except error.TwitterError as e:
             logging.error('Unable to send direct message: {}'.format(e.message))
             return None

@@ -26,7 +26,7 @@ class Database:
     def get_users(self):
         connection, cursor = self.open_connection()
         cursor.execute("SELECT * FROM users")
-        users_list = cursor.fetchone()
+        users_list = cursor.fetchone()[0]
         connection.close()
         return users_list
 
