@@ -4,5 +4,11 @@
     "consumer_secret": "aconsumersecret",
     "access_token": "anaccesstoken",
     "access_token_secret": "anaccesstokensecret"
+  },
+  "postgresql": {
+    "user": "auser",
+    "password": "apassword",
+    "host": "ahost",
+    "database": "adatabase"
   }
 }

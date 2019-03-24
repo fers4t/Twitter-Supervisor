@@ -1,11 +1,7 @@
 import json
-import logging
 
 
 class ConfigFileParser:
-
-    # Default values
-    DEFAULT_DB_FILE = "followers.db"
 
     def __init__(self, config_file_name):
         self.config_file_name = config_file_name
@@ -28,10 +24,17 @@ class ConfigFileParser:
         else:
             raise KeyError("No \"twitter_api\" key found in {}".format(self.config_file_name))
 
-    def get_database_filename(self):
-        try:
-            return self.config["database_file"]
-        except KeyError as e:
-            logging.info("No database filename is specified in {}. Default value \"{}\" will be used."
-                         .format(self.config_file_name, self.DEFAULT_DB_FILE))
-            return self.DEFAULT_DB_FILE
+    def get_database_credentials(self):
+        if "postgresql" in self.config:
+            if "host" not in self.config["postgresql"]:
+                raise KeyError("No \"postgresql\" \"host\" found in {}".format(self.config_file_name))
+            if "database" not in self.config["postgresql"]:
+                raise KeyError("No \"postgresql\" \"database\" found in {}".format(self.config_file_name))
+            if "user" not in self.config["postgresql"]:
+                raise KeyError("No \"postgresql\" \"user\" found in {}".format(self.config_file_name))
+            if "password" not in self.config["postgresql"]:
+                raise KeyError("No \"postgresql\" \"password\" found in {}".format(self.config_file_name))
+            else:
+                return self.config["postgresql"]
+        else:
+            raise KeyError("No \"postgresql\" key found in {}".format(self.config_file_name))

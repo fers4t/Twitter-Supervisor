@@ -6,5 +6,10 @@
     "access_token": "anaccesstoken",
     "access_token_secret": "anaccesstokensecret"
   },
-  "database_file": "a_database_file.db"
+  "postgresql": {
+    "user": "auser",
+    "password": "apassword",
+    "host": "ahost",
+    "database": "adatabase"
+  }
 }
