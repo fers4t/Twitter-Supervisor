@@ -1,14 +1,25 @@
-import sqlite3
 from datetime import datetime
+import logging
+import psycopg2
 
 
 class Database:
 
-    def __init__(self, database_name):
-        self.database_name = database_name
+    def __init__(self, database_credentials):
+        try:
+            self.database_name = database_credentials["database"]
+            self.host = database_credentials["host"]
+            self.user = database_credentials["user"]
+            self.password = database_credentials["password"]
+        except KeyError as key_error:
+            logging.critical("Invalid \"database_credentials\" argument: {}".format(key_error.args[0]))
+            raise
+        except TypeError as type_error:
+            logging.critical("Incorrect \"database_credentials\" argument: {}".format(type_error.args[0]))
+            raise
 
     def open_connection(self):
-        connection = sqlite3.connect(self.database_name)
+        connection = psycopg2.connect(host=self.host, database=self.database_name, user=self.user, password=self.password)
         return connection, connection.cursor()
 
     def get_previous_followers_set(self):
