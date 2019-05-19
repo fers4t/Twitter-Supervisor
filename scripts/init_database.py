@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, '..')
+
 from twittersupervisor import Database, ConfigFileParser
 
 db = Database(ConfigFileParser('config.json').get_database_credentials())
