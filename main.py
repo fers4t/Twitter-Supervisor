@@ -11,7 +11,7 @@ config_file_name = "config.json"
 log_file_name = "twitter_supervisor.log"
 
 # Command line parsing & log config
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(prog="twitter-supervisor")
 parser.add_argument("--quiet", help="disable the sending of direct messages", action="store_true")
 parser.add_argument("--config", help="specify which configuration file to use. It must be a JSON file.", nargs=1,
                     metavar="CONFIG_FILE")
@@ -20,6 +20,7 @@ parser.add_argument("--reduce_tweets_number", help="delete the old tweets of the
                     metavar="NUM_OF_PRESERVED_TWEETS", type=int)
 parser.add_argument("--reduce_fav_number", help="delete the old favorites of the account", nargs=1,
                     metavar="NUM_OF_PRESERVED_FAVORITES", type=int)
+parser.add_argument("--version", action="version", version='%(prog)s v0.3.0')
 args = parser.parse_args()
 
 logging_config.set_logging_config(log_file_name)
