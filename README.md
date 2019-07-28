@@ -1,7 +1,8 @@
 # Twitter Supervisor
 > "I made this program to learn about Python and to know who stop following me on Twitter." - Quentin JODER 
 
-Twitter Supervisor informs you (via direct message) when someone follows or unfollows you.
+Twitter Supervisor informs you (via direct message) when someone follows or unfollows you. It can also destroy your old
+tweets and favorites but with some limitations (for details read the [related paragraph](#Limitations of the Twitter API)).
 
 Additional features might be added in the (near) future: keeping track of the "betrayals", trends detection 
 in your friends (people you are following) tweets...
@@ -16,8 +17,9 @@ in your friends (people you are following) tweets...
 ## Installation
 * Clone the project repository on your machine.
 * Run `pip install -Ur requirements.txt`
-* Create a `config.json` file in the project directory, where you will put the API keys, the id of the account you want 
-to supervise, and the name of the SQLite database file where the app data will be stored. It should look like this:
+* Create a `config.json` file (if you choose another name, specify it with the [option](#options)`--config` when you run
+ the script) in the project directory, where you will put the API keys, the id of the account you want to supervise, and
+  the name of the SQLite database file where the app data will be stored. It should look like this:
 
     ```json
     {
@@ -42,13 +44,29 @@ and if you want to test if the methods calling the Twitter API works too:
 $ pytest --allow_api_call
 ```
 ## How to use it?
+### Core command line
 Run `$ python main.py`(Windows) or `$ python3 main.py`(Linux):
 * the first time it will only create a `followers.db` SQLite database (to store the app data) and a `.log` file.
 * Then, each time this command is run, the specified account (`"username"` key in `config.json`) will receive messages
 telling him who are the followers it has gained or lost in the meantime.
 
-> Pro-tip: the names of the new followers & unfollowers are in the log file too.
 
+### Options
+```bash
+optional arguments:
+  -h, --help            show this help message and exit
+  --quiet               disable the sending of direct messages
+  --config CONFIG_FILE  specify which configuration file to use. It must be a
+                        JSON file.
+  --database DB_FILE    specify which SQLite .db file to use
+  --reduce_tweets_number NUM_OF_PRESERVED_TWEETS
+                        delete the old tweets of the account
+  --reduce_fav_number NUM_OF_PRESERVED_FAVORITES
+                        delete the old favorites of the account
+```
+
+
+## Automate the script with cron
 If you wish to automate this operation, you can, for example, create a scheduled job on a Linux server with **cron**:
 * edit the crontab file of a user with the command `crontab -e`
 * if you want to check for new followers/unfollowers each day at 7:00 a.m, insert:
@@ -58,3 +76,15 @@ command cron will run)
 * save and close the editor with `Ctrl+X`and then `Y`(nano) or `:wq`(vim), and it is done !
 
 For more information about cron, the syntax of the crontab files, nano or vim... ask your favorite search engine !
+
+## Limitations of the Twitter API
+The Twitter API has limitations which are particularly restraining the ability to delete your statuses and favorites in 
+mass. With a standard developer account you :
+
+- can only access the latest 3200 tweets of a user. Therefore, you cannot delete older tweets (except if you delete recent
+tweets to let older ones takes their places!)
+- can theoretically delete no more than 15 statuses and 15 favorites per 15 minutes window.
+
+Consequently, the `--reduce_tweets_number`, `--reduce_fav_number` [options](#options) are not useful if you want to mass
+ delete your likes and tweets at once. Their intended purpose is enable you automatically delete your oldest tweets and 
+ likes, in the long term, with an [automated](#automate-the-script-with-cron) use of the script.
