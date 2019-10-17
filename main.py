@@ -19,13 +19,14 @@ parser.add_argument("--database", help="specify which SQLite .db file to use", n
 parser.add_argument("--delete_tweets",
                     help="delete old tweets of the account, preserve only the specified number (by default 50)",
                     nargs='?', metavar="NUM_OF_PRESERVED_TWEETS", type=int, const=50)
-# parser.add_argument("--delete_blank_retweets",
-#                     help="delete old retweets with no comment, preserve only the specified number",
-#                     nargs='?', metavar="NUM_OF_PRESERVED_BLANK_RETWEETS", type=int, const=0)
+parser.add_argument("--delete_retweets",
+                    help="delete old \"blank\" retweets (does not delete quoted statuses), preserve only the "
+                         "specified number (by default 10)",
+                    nargs='?', metavar="NUM_OF_PRESERVED_RETWEETS", type=int, const=10)
 parser.add_argument("--delete_favorites",
-                    help="delete old likes of the account, preserve only the specified number (by default 50)",
-                    nargs='?', metavar="NUM_OF_PRESERVED_FAVORITES", type=int, const=50)
-parser.add_argument("--version", action="version", version='%(prog)s v0.3.1')
+                    help="delete old likes of the account, preserve only the specified number (by default 10)",
+                    nargs='?', metavar="NUM_OF_PRESERVED_FAVORITES", type=int, const=10)
+parser.add_argument("--version", action="version", version='%(prog)s v0.4.0')
 args = parser.parse_args()
 logging.debug('Parser arguments: {0}'.format(args))
 
@@ -101,6 +102,12 @@ if args.delete_tweets:
     NUMBER_OF_STATUSES_TO_KEEP = args.delete_tweets
     deleted_tweets = twitter_api.delete_old_stuff('tweet', NUMBER_OF_STATUSES_TO_KEEP)
     logging.info('{} tweets have been deleted.'.format(len(deleted_tweets)))
+
+# Delete old retweets
+if args.delete_retweets:
+    NUMBER_OF_RETWEETS_TO_KEEP = args.delete_retweets
+    deleted_tweets = twitter_api.delete_old_stuff('retweet', NUMBER_OF_RETWEETS_TO_KEEP)
+    logging.info('{} retweets have been deleted.'.format(len(deleted_tweets)))
 
 # Delete old favorites
 if args.delete_favorites:

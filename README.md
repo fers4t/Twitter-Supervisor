@@ -52,7 +52,7 @@ telling him who are the followers it has gained or lost in the meantime.
 
 
 ### Options
-```bash
+```
 optional arguments:
   -h, --help            show this help message and exit
   --quiet               disable the sending of direct messages
@@ -62,9 +62,13 @@ optional arguments:
   --delete_tweets [NUM_OF_PRESERVED_TWEETS]
                         delete old tweets of the account, preserve only the
                         specified number (by default 50)
+  --delete_retweets [NUM_OF_PRESERVED_RETWEETS]
+                        delete old "blank" retweets (does not delete quoted
+                        statuses), preserve only the specified number (by
+                        default 10)
   --delete_favorites [NUM_OF_PRESERVED_FAVORITES]
                         delete old likes of the account, preserve only the
-                        specified number (by default 50)
+                        specified number (by default 10)
   --version             show the program version number and exit
 
 ```
@@ -89,6 +93,6 @@ mass. With a standard developer account you :
 tweets to let older ones takes their places!)
 - can theoretically delete no more than 15 statuses and 15 favorites per 15 minutes window.
 
-Consequently, the `--delete_tweets` `--delete-favorites` [options](#options) are not useful if you want to mass
+Consequently, the `--delete_tweets`, `--delete_retweets` or `--delete-favorites` [options](#options) are not useful if you want to mass
  delete your likes and tweets at once. Their intended purpose is enable you automatically delete your oldest tweets and 
  likes, in the long term, with an [automated](#automate-the-script-with-cron) use of the script.

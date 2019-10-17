@@ -86,9 +86,11 @@ class TwitterApi:
             return None
 
     def delete_old_stuff(self, items_type, number_of_preserved_items):
-        if items_type == 'tweet' or items_type == 'blank-retweet':
+        if items_type == 'tweet' or items_type == 'retweet':
             items = self.get_user_timeline()
             rate_limit = self.check_rate_limit(self.DESTROY_STATUS_ENDPOINT)
+            if items_type == 'retweet':
+                items = list(filter(lambda x: x.retweeted is True, items))
         elif items_type == 'favorite':
             items = self.get_favorites()
             rate_limit = self.check_rate_limit(self.DESTROY_FAVORITE_ENDPOINT)
