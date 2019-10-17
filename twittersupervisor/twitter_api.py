@@ -4,6 +4,9 @@ import logging
 
 class TwitterApi:
 
+    DESTROY_STATUS_ENDPOINT = "https://api.twitter.com/1.1/statuses/destroy/:id.json"
+    DESTROY_FAVORITE_ENDPOINT = "https://api.twitter.com/1.1/favorites/destroy.json"
+
     def __init__(self, twitter_credentials):
         try:
             self.username = twitter_credentials["username"]
@@ -17,6 +20,13 @@ class TwitterApi:
         except TypeError as type_error:
             logging.critical("Incorrect \"twitter_credentials\" argument: {}".format(type_error.args[0]))
             raise
+
+    def check_rate_limit(self, endpoint_url):
+        try:
+            return self.api.CheckRateLimit(endpoint_url)
+        except error.TwitterError as e:
+            logging.critical('An error happened when rate limit of endpoint {} was checked: {}'.format(endpoint_url, e.message))
+            return None
 
     def verify_credentials(self):
         try:
@@ -46,3 +56,65 @@ class TwitterApi:
         except error.TwitterError as e:
             logging.error('Unable to send direct message: {}'.format(e.message))
             return None
+
+    def get_user_timeline(self):
+        try:
+            return self.api.GetUserTimeline(screen_name=self.username, count=200, since_id=20)
+        except error.TwitterError as e:
+            logging.error('Unable to get user @{0} timeline: {1}'.format(self.username, e.message))
+            return None
+
+    def get_favorites(self):
+        try:
+            return self.api.GetFavorites(screen_name=self.username, count=200, since_id=20)
+        except error.TwitterError as e:
+            logging.error('Unable to get user @{0} favorites: {1}'.format(self.username, e.message))
+            return None
+
+    def delete_status(self, status_id):
+        try:
+            return self.api.DestroyStatus(status_id)
+        except error.TwitterError as e:
+            logging.error('Unable to delete status n°{0} because of error: {1}'.format(status_id, e.message))
+            return None
+
+    def delete_favorite(self, status_id):
+        try:
+            return self.api.DestroyFavorite(status_id=status_id)
+        except error.TwitterError as e:
+            logging.error('Unable to delete favorite tweet n°{0} because of error: {1}'.format(status_id, e.message))
+            return None
+
+    def delete_old_stuff(self, items_type, number_of_preserved_items):
+        if items_type == 'tweet' or items_type == 'retweet':
+            items = self.get_user_timeline()
+            rate_limit = self.check_rate_limit(self.DESTROY_STATUS_ENDPOINT)
+            if items_type == 'retweet':
+                items = list(filter(lambda x: x.retweeted is True, items))
+        elif items_type == 'favorite':
+            items = self.get_favorites()
+            rate_limit = self.check_rate_limit(self.DESTROY_FAVORITE_ENDPOINT)
+        else:
+            logging.error('This type of item to delete is not valid: {0}'.format(items_type))
+            return []
+
+        if rate_limit is not None:
+            logging.debug('Deletable status - Remaining: {} - Reset: {}'.format(rate_limit.remaining, rate_limit.reset))
+            if rate_limit.remaining < len(items) - number_of_preserved_items:
+                start_index = len(items) - rate_limit.remaining
+            else:
+                start_index = number_of_preserved_items
+        else:
+            logging.error('Unable to check the rate limit of the endpoint used to destroy {0}. No {0} will be deleted.')
+            return []
+
+        deleted_items = []
+        for i in range(start_index, len(items)):
+            if items_type == 'favorite':
+                deleted_item = self.delete_favorite(items[i].id)
+            else:
+                deleted_item = self.delete_status(items[i].id)
+            if deleted_item is not None:
+                deleted_items.append(deleted_item)
+            logging.info('Delete {0} n°{1} from {2}'.format(items_type, items[i].id, items[i].user.screen_name))
+        return deleted_items
