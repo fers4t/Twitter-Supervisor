@@ -8,7 +8,7 @@ import logging_config
 
 # Default values
 config_file_name = "config.json"
-log_file_name = "twitter_supervisor.log"
+logging_config.set_logging_config("twitter_supervisor.log")
 
 # Command line parsing & log config
 parser = argparse.ArgumentParser(prog="twitter-supervisor")
@@ -16,14 +16,18 @@ parser.add_argument("--quiet", help="disable the sending of direct messages", ac
 parser.add_argument("--config", help="specify which configuration file to use. It must be a JSON file.", nargs=1,
                     metavar="CONFIG_FILE")
 parser.add_argument("--database", help="specify which SQLite .db file to use", nargs=1, metavar="DB_FILE")
-parser.add_argument("--reduce_tweets_number", help="delete the old tweets of the account", nargs=1,
-                    metavar="NUM_OF_PRESERVED_TWEETS", type=int)
-parser.add_argument("--reduce_fav_number", help="delete the old favorites of the account", nargs=1,
-                    metavar="NUM_OF_PRESERVED_FAVORITES", type=int)
-parser.add_argument("--version", action="version", version='%(prog)s v0.3.0')
+parser.add_argument("--delete_tweets",
+                    help="delete old tweets of the account, preserve only the specified number (by default 50)",
+                    nargs='?', metavar="NUM_OF_PRESERVED_TWEETS", type=int, const=50)
+# parser.add_argument("--delete_blank_retweets",
+#                     help="delete old retweets with no comment, preserve only the specified number",
+#                     nargs='?', metavar="NUM_OF_PRESERVED_BLANK_RETWEETS", type=int, const=0)
+parser.add_argument("--delete_favorites",
+                    help="delete old likes of the account, preserve only the specified number (by default 50)",
+                    nargs='?', metavar="NUM_OF_PRESERVED_FAVORITES", type=int, const=50)
+parser.add_argument("--version", action="version", version='%(prog)s v0.3.1')
 args = parser.parse_args()
-
-logging_config.set_logging_config(log_file_name)
+logging.debug('Parser arguments: {0}'.format(args))
 
 logging.info('TWITTER SUPERVISOR STARTS!')
 
@@ -93,37 +97,15 @@ else:
 # Delete old tweets and favorites---------------------------------------------------------------------------------------
 
 # Delete old tweets
-if args.reduce_tweets_number:
-    NUMBER_OF_STATUSES_TO_KEEP = args.reduce_tweets_number[0]
-    status_rate_limit = twitter_api.check_rate_limit(twitter_api.DESTROY_STATUS_ENDPOINT)
-    logging.debug('Deletable status - Remaining: {} - Reset: {}'
-                  .format(status_rate_limit.remaining, status_rate_limit.reset))
-    if status_rate_limit is not None and status_rate_limit.reset == 0:
-        tweets = twitter_api.get_user_timeline()
-        deleted_tweets = []
-        if (len(tweets) - status_rate_limit.remaining) > NUMBER_OF_STATUSES_TO_KEEP:
-            deleted_tweets = twitter_api.delete_old_stuff('statuses', tweets, len(tweets) - status_rate_limit.remaining,
-                                                          len(tweets))
-        elif len(tweets) > NUMBER_OF_STATUSES_TO_KEEP:
-            deleted_tweets = twitter_api.delete_old_stuff('statuses', tweets, NUMBER_OF_STATUSES_TO_KEEP, len(tweets))
-        logging.info('{} tweets have been deleted.'.format(len(deleted_tweets)))
+if args.delete_tweets:
+    NUMBER_OF_STATUSES_TO_KEEP = args.delete_tweets
+    deleted_tweets = twitter_api.delete_old_stuff('tweet', NUMBER_OF_STATUSES_TO_KEEP)
+    logging.info('{} tweets have been deleted.'.format(len(deleted_tweets)))
 
 # Delete old favorites
-if args.reduce_fav_number:
-    NUMBER_OF_FAVORITES_TO_KEEP = args.reduce_fav_number[0]
-    favorite_rate_limit = twitter_api.check_rate_limit(twitter_api.DESTROY_FAVORITE_ENDPOINT)
-    logging.debug('Deletable favorites - Remaining: {} - Reset: {}'
-                  .format(favorite_rate_limit.remaining, favorite_rate_limit.reset))
-    if favorite_rate_limit is not None and favorite_rate_limit.reset == 0:
-        favorites = twitter_api.get_favorites()
-        deleted_favorites = []
-        if (len(favorites) - favorite_rate_limit.remaining) > NUMBER_OF_FAVORITES_TO_KEEP:
-            deleted_favorites = twitter_api.delete_old_stuff('favorites', favorites,
-                                                             len(favorites) - favorite_rate_limit.remaining,
-                                                             len(favorites))
-        elif len(favorites) > NUMBER_OF_FAVORITES_TO_KEEP:
-            deleted_favorites = twitter_api.delete_old_stuff('favorites', favorites, NUMBER_OF_FAVORITES_TO_KEEP,
-                                                             len(favorites))
-        logging.info('{} favorites have been deleted.'.format(len(deleted_favorites)))
+if args.delete_favorites:
+    NUMBER_OF_FAVORITES_TO_KEEP = args.delete_favorites
+    deleted_favorites = twitter_api.delete_old_stuff('favorite', NUMBER_OF_FAVORITES_TO_KEEP)
+    logging.info('{} favorites have been deleted.'.format(len(deleted_favorites)))
 
 logging.info("TWITTER SUPERVISOR HAS DONE ITS WORK!")

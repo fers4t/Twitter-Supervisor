@@ -59,10 +59,14 @@ optional arguments:
   --config CONFIG_FILE  specify which configuration file to use. It must be a
                         JSON file.
   --database DB_FILE    specify which SQLite .db file to use
-  --reduce_tweets_number NUM_OF_PRESERVED_TWEETS
-                        delete the old tweets of the account
-  --reduce_fav_number NUM_OF_PRESERVED_FAVORITES
-                        delete the old favorites of the account
+  --delete_tweets [NUM_OF_PRESERVED_TWEETS]
+                        delete old tweets of the account, preserve only the
+                        specified number (by default 50)
+  --delete_favorites [NUM_OF_PRESERVED_FAVORITES]
+                        delete old likes of the account, preserve only the
+                        specified number (by default 50)
+  --version             show the program version number and exit
+
 ```
 
 
@@ -85,6 +89,6 @@ mass. With a standard developer account you :
 tweets to let older ones takes their places!)
 - can theoretically delete no more than 15 statuses and 15 favorites per 15 minutes window.
 
-Consequently, the `--reduce_tweets_number`, `--reduce_fav_number` [options](#options) are not useful if you want to mass
+Consequently, the `--delete_tweets` `--delete-favorites` [options](#options) are not useful if you want to mass
  delete your likes and tweets at once. Their intended purpose is enable you automatically delete your oldest tweets and 
  likes, in the long term, with an [automated](#automate-the-script-with-cron) use of the script.

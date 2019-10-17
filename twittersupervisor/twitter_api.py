@@ -82,20 +82,37 @@ class TwitterApi:
         try:
             return self.api.DestroyFavorite(status_id=status_id)
         except error.TwitterError as e:
-            logging.error('Unable to delete status n°{0} because of error: {1}'.format(status_id, e.message))
+            logging.error('Unable to delete favorite tweet n°{0} because of error: {1}'.format(status_id, e.message))
             return None
 
-    def delete_old_stuff(self, items_type, items, start, end):
+    def delete_old_stuff(self, items_type, number_of_preserved_items):
+        if items_type == 'tweet' or items_type == 'blank-retweet':
+            items = self.get_user_timeline()
+            rate_limit = self.check_rate_limit(self.DESTROY_STATUS_ENDPOINT)
+        elif items_type == 'favorite':
+            items = self.get_favorites()
+            rate_limit = self.check_rate_limit(self.DESTROY_FAVORITE_ENDPOINT)
+        else:
+            logging.error('This type of item to delete is not valid: {0}'.format(items_type))
+            return []
+
+        if rate_limit is not None:
+            logging.debug('Deletable status - Remaining: {} - Reset: {}'.format(rate_limit.remaining, rate_limit.reset))
+            if rate_limit.remaining < len(items) - number_of_preserved_items:
+                start_index = len(items) - rate_limit.remaining
+            else:
+                start_index = number_of_preserved_items
+        else:
+            logging.error('Unable to check the rate limit of the endpoint used to destroy {0}. No {0} will be deleted.')
+            return []
+
         deleted_items = []
-        for i in range(start, end):
-            if items_type == 'statuses':
-                deleted_status = self.delete_status(items[i].id)
-                if deleted_status is not None:
-                    deleted_items.append(deleted_status)
-                logging.debug('Delete tweet n°{0} from {1}'.format(items[i].id, items[i].user.screen_name))
-            elif items_type == 'favorites':
-                deleted_status = self.delete_favorite(items[i].id)
-                if deleted_status is not None:
-                    deleted_items.append(deleted_status)
-                logging.debug('Delete favorite n°{0} from {1}'.format(items[i].id, items[i].user.screen_name))
+        for i in range(start_index, len(items)):
+            if items_type == 'favorite':
+                deleted_item = self.delete_favorite(items[i].id)
+            else:
+                deleted_item = self.delete_status(items[i].id)
+            if deleted_item is not None:
+                deleted_items.append(deleted_item)
+            logging.info('Delete {0} n°{1} from {2}'.format(items_type, items[i].id, items[i].user.screen_name))
         return deleted_items
