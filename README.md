@@ -13,11 +13,11 @@ in your friends (people you are following) tweets...
 * **Python 3.4 or more** (older versions are not tested) and **pip**
 * **Having a (at least free) Twitter developer account** (https://developer.twitter.com/en/apply-for-access), to get the
  key, the token and their secrets, which are all required to access the Twitter API.
+* Don't forget to give **'Direct Message' permission** for your API.
 
 ## Installation
 * Clone the project repository on your machine.
 * Run `pip install -Ur requirements.txt`
-* Don't forget to give 'Direct Message' permission for your API.
 * Create a `config.json` file (if you choose another name, specify it with the [option](#options)`--config` when you run
  the script) in the project directory, where you will put the API keys, the id of the account you want to supervise, and
   the name of the SQLite database file where the app data will be stored. It should look like this:
