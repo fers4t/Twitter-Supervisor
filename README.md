@@ -17,6 +17,7 @@ in your friends (people you are following) tweets...
 ## Installation
 * Clone the project repository on your machine.
 * Run `pip install -Ur requirements.txt`
+* Don't forget to give 'Direct Message' permission for your API.
 * Create a `config.json` file (if you choose another name, specify it with the [option](#options)`--config` when you run
  the script) in the project directory, where you will put the API keys, the id of the account you want to supervise, and
   the name of the SQLite database file where the app data will be stored. It should look like this:
